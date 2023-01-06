@@ -6,6 +6,8 @@ export interface Player {
     deck: string[];
     hand: string[];
     entrance: Ground;
+    dungeon: Ground[];
     garrison: Ground;
     discard: string[];
+    resources: any;
 }

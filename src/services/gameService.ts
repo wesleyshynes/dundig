@@ -67,6 +67,7 @@ class GameService {
                 connections: [],
                 level: 0,
             },
+            dungeon: [],
             garrison: {
                 id: `${playerName}garrison`,
                 owner: playerName,
@@ -77,6 +78,7 @@ class GameService {
                 level: 0,
             },
             discard: [],
+            resources: {},
         };
 
         this.cardRef[`${playerName}entrance`] = player.entrance;
