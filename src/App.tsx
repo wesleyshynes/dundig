@@ -7,7 +7,7 @@ import CommonGround from './components/CommonGround/CommonGround';
 function App() {
 
   const [renderCount, setRenderCount] = useState(0);
-  const [activePlayer, setActivePlayer] = useState('player1');
+  const { activePlayer } = gameService;
 
   useEffect(() => {
     if (gameService.gameState === 'new') {
@@ -22,14 +22,33 @@ function App() {
   if (gameService.gameState === 'new') {
     return (
       <div className="App">
-        Loading...
+        Loading... 
+      </div>
+    )
+  }
+
+  if (gameService.gameState === 'ended') {
+    return (
+      <div className="App">
+        Game ended
       </div>
     )
   }
 
   return (
     <div className="App">
-      {gameService.gameState} {renderCount}
+      {gameService.gameState} {renderCount} - {gameService.log[gameService.log.length - 1]}
+
+      <div className="dev-options">
+        {gameService.players && Object.keys(gameService.players).map((playerId) => (
+          <button
+            key={playerId}
+            onClick={() => gameService.setActivePlayer(playerId)}
+            disabled={activePlayer === playerId}>
+            {playerId}
+          </button>
+        ))}
+      </div>
 
       <PlayerField playerId={activePlayer} />
 

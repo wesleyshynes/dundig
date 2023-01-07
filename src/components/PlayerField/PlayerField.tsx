@@ -8,6 +8,8 @@ export default function PlayerField(props: {
 }) {
     const { playerId } = props;
 
+    const { activePlayer } = gameService;
+
     const playerInfo: Player = gameService.players[playerId];
 
     const {
@@ -30,13 +32,23 @@ export default function PlayerField(props: {
             name: {name} <br />
             <div className="player-deck">
                 deck: {deck.length}
-                <button onClick={drawCard}>draw</button>
+                <button
+                    disabled={activePlayer !== playerId}
+                    onClick={drawCard}>
+                    draw
+                </button>
             </div>
             <div className="player-hand">
                 hand: {hand.length}
                 <div className="player-hand-cards">
-                    {hand?.map((card, idx) => (
-                        <GameCard key={idx} cardId={card} />
+                    {hand?.map((card, idx) => activePlayer === playerId ? (
+                        <GameCard 
+                        key={idx}
+                        cardId={card}
+                        location={`player.${playerId}.hand.${idx}`}
+                        />
+                    ) : (
+                        <div key={idx} className="game-card">?</div>
                     ))}
                 </div>
             </div>

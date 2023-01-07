@@ -5,11 +5,11 @@ import { Sentient } from "../types/sentient.model";
 
 class GameService {
     players: { [v: string]: Player } = {};
-
     playerTurn: string = '';
-
-    gameState: string = 'new';
-
+    activePlayer: string = '';
+    gameState: string = 'new';    
+    gameMessage: string = '';
+    log: string[] = [];
     renderCount: number = 0;
 
     renderFn = () => {};
@@ -31,13 +31,20 @@ class GameService {
         this.renderFn = fn;
     }
 
+    setActivePlayer(playerName: string) {
+        this.activePlayer = playerName;
+        this.renderFn();
+    }
+
     startGame() {
         this.addPlayer('player1');
         this.addPlayer('player2');
 
         this.playerTurn = 'player1';
-        this.gameState = 'started';
+        this.activePlayer = 'player1';
 
+        this.gameState = 'started';
+        this.addLogMessage(`Game started ${this.playerTurn} goes first`);
         this.renderFn();
     }
 
@@ -48,8 +55,22 @@ class GameService {
             if (cardId) {
                 player.hand.push(cardId);
             }
+            this.addLogMessage(`${playerName} drew a card`);
+        } else {
+            this.gameState = 'ended';
+            this.addLogMessage(`GAME OVER ${playerName} tried to draw a card but has no cards left in their deck`);
         }
         this.renderFn()
+    }
+
+    playCard(cardId: string, location: string) {
+        this.addLogMessage(`${this.activePlayer} played ${cardId} from ${location}`);
+        this.renderFn();
+    }
+
+    addLogMessage(message: string) {
+        this.log.push(message);
+        // this.renderFn();
     }
 
     addPlayer(playerName: string) {
@@ -104,7 +125,7 @@ class GameService {
             player.deck.push(`${playerName}ground${i}`);
         }
 
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 5; i++) {
             const novelty: Novelty = {
                 id: `${playerName}novelty${i}`,
                 owner: playerName,
