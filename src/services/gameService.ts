@@ -7,12 +7,14 @@ class GameService {
     players: { [v: string]: Player } = {};
     playerTurn: string = '';
     activePlayer: string = '';
-    gameState: string = 'new';    
+    gameState: string = 'new';
     gameMessage: string = '';
     log: string[] = [];
     renderCount: number = 0;
 
-    renderFn = () => {};
+    cardVoid: string[] = [];
+
+    renderFn = () => { };
 
     commonGroud: Ground = {
         id: 'commonGround',
@@ -26,6 +28,11 @@ class GameService {
     cardRef: { [v: string]: Ground | Sentient | Novelty } = {
         commonGround: this.commonGroud,
     };
+
+    selectedCard: any = {
+        id: '',
+        location: '',
+    }
 
     setRenderFn(fn: () => void) {
         this.renderFn = fn;
@@ -61,11 +68,6 @@ class GameService {
             this.addLogMessage(`GAME OVER ${playerName} tried to draw a card but has no cards left in their deck`);
         }
         this.renderFn()
-    }
-
-    playCard(cardId: string, location: string) {
-        this.addLogMessage(`${this.activePlayer} played ${cardId} from ${location}`);
-        this.renderFn();
     }
 
     addLogMessage(message: string) {
@@ -161,6 +163,94 @@ class GameService {
         }
 
         this.players[playerName] = player;
+    }
+
+    selectCard(cardId: string, location: string) {
+
+        if (this.selectedCard.id) {
+            this.deselectCard();
+        }
+
+        this.selectedCard.id = cardId;
+        this.selectedCard.location = location;
+
+        this.removeCardFromLocation(cardId, location);
+
+        this.addLogMessage(`${this.activePlayer} selected ${cardId} from ${location}`);
+        this.renderFn();
+    }
+
+    clearSelectedCardInfo() {
+        this.selectedCard.id = '';
+        this.selectedCard.location = '';
+    }
+
+    deselectCard() {
+        this.addCardToLocation(this.selectedCard.id, this.selectedCard.location);
+
+        this.clearSelectedCardInfo();
+
+        this.addLogMessage(`${this.activePlayer} deselected ${this.selectedCard.id} from ${this.selectedCard.location}`);
+        this.renderFn();
+    }
+
+    addCardToLocation(cardId: string, location: string) {
+        const locationArray = this.parseLocation(location);
+        locationArray.push(cardId);
+    }
+
+    removeCardFromLocation(cardId: string, location: string) {
+        const locationArray = this.parseLocation(location);
+        const cardIndex = locationArray.indexOf(cardId);
+        if (cardIndex > -1) {
+            locationArray.splice(cardIndex, 1);
+        }
+    }
+
+    parseLocation(locationString: string) {
+        const splitLocation = locationString.split('.');
+        const baseLocation = splitLocation.shift()
+        let location: any = this.cardVoid
+        if (!baseLocation) return location;
+
+        if (baseLocation === 'players') {
+            location = this.players;
+            splitLocation.forEach((locationName) => {
+                if (locationName && location[locationName] !== null) {
+                    location = location[locationName];
+                }
+            })
+        }
+        return location
+    }
+
+    playCardHere(locationString: string) {
+        this.addCardToLocation(this.selectedCard.id, locationString);
+        this.addLogMessage(`${this.activePlayer} played ${this.selectedCard.id} to ${locationString}`);
+        this.selectedCard.id = '';
+        this.selectedCard.location = '';
+        this.renderFn();
+    }
+
+    canPlayCardHere(locationString: string) {
+
+        if (!this.selectedCard.id) return false;
+
+        const cardSelected = this.cardRef[this.selectedCard.id];
+        const selectedCardLocation = this.selectedCard.location.split('.');
+        const selectedCardLocationType = selectedCardLocation[selectedCardLocation.length - 1];
+
+        const targetLocation = locationString.split('.');
+        const targetLocationType = targetLocation[targetLocation.length - 1];
+
+        if (selectedCardLocationType === 'hand') {
+            if (cardSelected.type === 'ground') {
+                if (targetLocationType === 'dungeon') {
+                    return targetLocation[1] === this.activePlayer;
+                }
+            }
+        }
+        return false
     }
 
 

@@ -7,7 +7,7 @@ import CommonGround from './components/CommonGround/CommonGround';
 function App() {
 
   const [renderCount, setRenderCount] = useState(0);
-  const { activePlayer } = gameService;
+  const { activePlayer, selectedCard } = gameService;
 
   useEffect(() => {
     if (gameService.gameState === 'new') {
@@ -48,6 +48,20 @@ function App() {
             {playerId}
           </button>
         ))}
+      </div>
+
+      <div className="selected-card">
+        {selectedCard && selectedCard.id && (
+          <>
+            Selected Card: {selectedCard.id} <br />
+            Location: {selectedCard.location} <br />
+            <button onClick={() => {
+              gameService.deselectCard();
+            }}>
+              Deselect Card
+            </button>
+          </>
+        )}
       </div>
 
       <PlayerField playerId={activePlayer} />

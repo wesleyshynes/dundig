@@ -42,10 +42,10 @@ export default function PlayerField(props: {
                 hand: {hand.length}
                 <div className="player-hand-cards">
                     {hand?.map((card, idx) => activePlayer === playerId ? (
-                        <GameCard 
-                        key={idx}
-                        cardId={card}
-                        location={`player.${playerId}.hand.${idx}`}
+                        <GameCard
+                            key={idx}
+                            cardId={card}
+                            location={`players.${playerId}.hand`}
                         />
                     ) : (
                         <div key={idx} className="game-card">?</div>
@@ -57,6 +57,16 @@ export default function PlayerField(props: {
             </div>
             <div className="player-dungeon">
                 dungeon: {dungeon.length}
+
+                {gameService.canPlayCardHere(`players.${playerId}.dungeon`) && (
+                    <button onClick={() => {
+                        gameService.playCardHere(`players.${playerId}.dungeon`)
+                    }}>
+                        Play Here
+                    </button>
+                )}
+
+
             </div>
             <div className="player-garrison">
                 garrison: {garrison.occupants.length}

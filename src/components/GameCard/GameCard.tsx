@@ -15,9 +15,9 @@ export default function GameCard(props: {
             {cardInfo.type} <br />
             <button
                 disabled={activePlayer !== cardInfo.owner}
-                onClick={() => gameService.playCard(cardId, location)}
+                onClick={() => gameService.selectCard(cardId, location)}
             >
-                Play Card
+                Select Card
             </button>
         </div>
     )
