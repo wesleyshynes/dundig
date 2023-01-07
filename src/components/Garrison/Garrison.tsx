@@ -1,4 +1,5 @@
 import gameService from "../../services/gameService";
+import GameCard from "../GameCard/GameCard";
 
 export default function Garrison(props: {
     playerId: string;
@@ -9,6 +10,11 @@ export default function Garrison(props: {
     return (
         <div className="garrison">
             garrison: {playerGarrison.occupants.length} <br />
+            <GameCard
+                cardId={playerGarrison.id}
+                location={`players.${playerId}.garrison`}
+                buttons={[]}
+            />
         </div>
     )
 

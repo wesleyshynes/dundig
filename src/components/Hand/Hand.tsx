@@ -7,28 +7,35 @@ export default function Hand(props: {
 }) {
 
     const { playerId } = props;
-    const  { activePlayer } = gameService;
+    const { activePlayer } = gameService;
     const hand = gameService.players[playerId].hand;
+
+    const myHand = activePlayer === playerId;
+
+    const selectCardFunction = (cardId: string, location: string) => {
+        gameService.selectCard(cardId, location);
+    }
 
     return (
         <div className="hand">
             hand: {hand.length}
             <div className="player-hand-cards">
-                {hand?.map((card, idx) => activePlayer === playerId ? (
+                {hand?.map((card, idx) => myHand ? (
                     <GameCard
                         key={idx}
                         cardId={card}
                         location={`players.${playerId}.hand`}
                         buttons={[
                             {
-                                clickFn: (cId, loc) => gameService.selectCard(cId, loc),
-                                label: 'Select Card'
+                                clickFn: selectCardFunction,
+                                label: 'Select'
                             }
                         ]}
                     />
                 ) : (
                     <div key={idx} className="game-card">?</div>
-                ))}
+                )
+                )}
             </div>
         </div>
     )
