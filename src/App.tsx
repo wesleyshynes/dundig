@@ -3,11 +3,14 @@ import gameService from './services/gameService';
 import './App.scss';
 import PlayerField from './components/PlayerField/PlayerField';
 import CommonGround from './components/CommonGround/CommonGround';
+import SelectedCard from './components/SelectedCard/SelectedCard';
+import GameLog from './components/GameLog/GameLog';
+import GameOptions from './components/GameOptions/GameOptions';
 
 function App() {
 
   const [renderCount, setRenderCount] = useState(0);
-  const { activePlayer, selectedCard } = gameService;
+  const { activePlayer } = gameService;
 
   useEffect(() => {
     if (gameService.gameState === 'new') {
@@ -22,7 +25,7 @@ function App() {
   if (gameService.gameState === 'new') {
     return (
       <div className="App">
-        Loading... 
+        Loading...
       </div>
     )
   }
@@ -37,44 +40,24 @@ function App() {
 
   return (
     <div className="App">
-      {gameService.gameState} {renderCount} - {gameService.log[gameService.log.length - 1]}
-
-      <div className="dev-options">
-        {gameService.players && Object.keys(gameService.players).map((playerId) => (
-          <button
-            key={playerId}
-            onClick={() => gameService.setActivePlayer(playerId)}
-            disabled={activePlayer === playerId}>
-            {playerId}
-          </button>
-        ))}
+      <div className="render-count">
+        R: {renderCount}
       </div>
 
-      <div className="selected-card">
-        {selectedCard && selectedCard.id && (
-          <>
-            Selected Card: {selectedCard.id} <br />
-            Location: {selectedCard.location} <br />
-            <button onClick={() => {
-              gameService.deselectCard();
-            }}>
-              Deselect Card
-            </button>
-          </>
-        )}
-      </div>
+      <GameLog />
+
+      <GameOptions />
+
+      <SelectedCard />
 
       <PlayerField playerId={activePlayer} />
 
       <CommonGround />
 
-      {gameService.gameState === 'started' && (
-        <>
-          {Object.keys(gameService.players).filter(x => x !== activePlayer).map((playerId) => (
-            <PlayerField key={playerId} playerId={playerId} />
-          ))}
-        </>
-      )}
+      {Object.keys(gameService.players).filter(x => x !== activePlayer).map((playerId) => (
+        <PlayerField key={playerId} playerId={playerId} />
+      ))}
+
     </div>
   );
 }

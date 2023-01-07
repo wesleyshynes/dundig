@@ -1,6 +1,10 @@
-import gameService from "../../services/gameService";
-import { Player } from "../../types/player.model";
-import GameCard from "../GameCard/GameCard";
+import Deck from "../Deck/Deck";
+import Discard from "../Discard/Discard";
+import Dungeon from "../Dungeon/Dungeon";
+import Entrance from "../Entrance/Entrance";
+import Garrison from "../Garrison/Garrison";
+import Hand from "../Hand/Hand";
+import PlayerInfo from "../PlayerInfo/PlayerInfo";
 import './playerField.scss'
 
 export default function PlayerField(props: {
@@ -8,71 +12,35 @@ export default function PlayerField(props: {
 }) {
     const { playerId } = props;
 
-    const { activePlayer } = gameService;
-
-    const playerInfo: Player = gameService.players[playerId];
-
-    const {
-        deck,
-        hand,
-        name,
-        entrance,
-        dungeon,
-        garrison,
-        discard
-    } = playerInfo;
-
-    const drawCard = () => {
-        gameService.drawCard(playerId);
-    }
-
     return (
         <div className="player-field">
-            player field: {playerId} <br />
-            name: {name} <br />
+
+            <div className="player-info">
+                <PlayerInfo playerId={playerId} />
+            </div>
+
             <div className="player-deck">
-                deck: {deck.length}
-                <button
-                    disabled={activePlayer !== playerId}
-                    onClick={drawCard}>
-                    draw
-                </button>
+                <Deck playerId={playerId} />
             </div>
+
             <div className="player-hand">
-                hand: {hand.length}
-                <div className="player-hand-cards">
-                    {hand?.map((card, idx) => activePlayer === playerId ? (
-                        <GameCard
-                            key={idx}
-                            cardId={card}
-                            location={`players.${playerId}.hand`}
-                        />
-                    ) : (
-                        <div key={idx} className="game-card">?</div>
-                    ))}
-                </div>
+                <Hand playerId={playerId} />
             </div>
+
             <div className="player-entrance">
-                entrance: {entrance.occupants.length}
+                <Entrance playerId={playerId} />
             </div>
+
             <div className="player-dungeon">
-                dungeon: {dungeon.length}
-
-                {gameService.canPlayCardHere(`players.${playerId}.dungeon`) && (
-                    <button onClick={() => {
-                        gameService.playCardHere(`players.${playerId}.dungeon`)
-                    }}>
-                        Play Here
-                    </button>
-                )}
-
-
+                <Dungeon playerId={playerId} />
             </div>
+
             <div className="player-garrison">
-                garrison: {garrison.occupants.length}
+                <Garrison playerId={playerId} />
             </div>
+
             <div className="player-discard">
-                discard: {discard.length}
+                <Discard playerId={playerId} />
             </div>
         </div>
 

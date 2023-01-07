@@ -166,15 +166,12 @@ class GameService {
     }
 
     selectCard(cardId: string, location: string) {
-
         if (this.selectedCard.id) {
             this.deselectCard();
         }
 
         this.selectedCard.id = cardId;
         this.selectedCard.location = location;
-
-        this.removeCardFromLocation(cardId, location);
 
         this.addLogMessage(`${this.activePlayer} selected ${cardId} from ${location}`);
         this.renderFn();
@@ -186,10 +183,7 @@ class GameService {
     }
 
     deselectCard() {
-        this.addCardToLocation(this.selectedCard.id, this.selectedCard.location);
-
         this.clearSelectedCardInfo();
-
         this.addLogMessage(`${this.activePlayer} deselected ${this.selectedCard.id} from ${this.selectedCard.location}`);
         this.renderFn();
     }
@@ -212,7 +206,6 @@ class GameService {
         const baseLocation = splitLocation.shift()
         let location: any = this.cardVoid
         if (!baseLocation) return location;
-
         if (baseLocation === 'players') {
             location = this.players;
             splitLocation.forEach((locationName) => {
@@ -225,6 +218,7 @@ class GameService {
     }
 
     playCardHere(locationString: string) {
+        this.removeCardFromLocation(this.selectedCard.id, this.selectedCard.location);
         this.addCardToLocation(this.selectedCard.id, locationString);
         this.addLogMessage(`${this.activePlayer} played ${this.selectedCard.id} to ${locationString}`);
         this.selectedCard.id = '';
@@ -233,7 +227,6 @@ class GameService {
     }
 
     canPlayCardHere(locationString: string) {
-
         if (!this.selectedCard.id) return false;
 
         const cardSelected = this.cardRef[this.selectedCard.id];
@@ -246,7 +239,10 @@ class GameService {
         if (selectedCardLocationType === 'hand') {
             if (cardSelected.type === 'ground') {
                 if (targetLocationType === 'dungeon') {
-                    return targetLocation[1] === this.activePlayer;
+                    // allow your own hand cards to be played to your dungeon
+                    // todo: check level and size of dungeon
+                    // todo: update the linking of the grounds
+                    return targetLocation[1] === this.activePlayer && selectedCardLocation[1] === this.activePlayer;
                 }
             }
         }
