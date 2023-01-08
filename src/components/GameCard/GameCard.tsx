@@ -16,6 +16,12 @@ export default function GameCard(props: {
         <div className="game-card">
             {cardInfo.name} <br />
             {cardInfo.type} <br />
+            {cardInfo.type !== 'ground' && cardInfo.cost && (
+                <div className="card-cost">
+                    H: {cardInfo.cost.hand} <br />
+                    G: {cardInfo.cost.ground} <br />
+                </div>
+            )} <br />
 
             <div className="card-buttons">
                 {props.buttons.map((button, idx) => (

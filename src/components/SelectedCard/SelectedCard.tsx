@@ -1,4 +1,5 @@
 import gameService from "../../services/gameService";
+import GameCard from "../GameCard/GameCard";
 import './selectedCard.scss'
 
 export default function SelectedCard() {
@@ -14,16 +15,16 @@ export default function SelectedCard() {
         )
     }
 
-    const cardInfo = gameService.cardRef[id]
-
     return (
         <div className="selected-card">
-            {cardInfo.name} - {location} <br />
-            <button onClick={() => {
-                gameService.deselectCard();
-            }}>
-                Deselect Card
-            </button>
+            <GameCard
+                cardId={id}
+                location={location}
+                buttons={[{
+                    label: 'deselect',
+                    clickFn: () => { gameService.deselectCard() }
+                }]}
+            />
         </div>
     )
 }

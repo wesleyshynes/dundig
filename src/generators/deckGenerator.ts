@@ -25,7 +25,10 @@ export const generateDeck = (options: { playerName: string, playerId: string }):
             owner: playerName,
             name: `${playerName}'s Novelty ${i}`,
             type: 'novelty',
-            cost: 0,
+            cost: {
+                hand: Math.round(Math.random() * 2),
+                ground: Math.round(Math.random() * 2),
+            },
             level: Math.round(Math.random() * 7),
         };
         deck.push(novelty);
@@ -37,7 +40,10 @@ export const generateDeck = (options: { playerName: string, playerId: string }):
             owner: playerName,
             name: `${playerName}'s Sentient ${i}`,
             type: 'sentient',
-            cost: 0,
+            cost: {
+                hand: Math.round(Math.random() * 2),
+                ground: Math.round(Math.random() * 2),
+            },
             level: Math.round(Math.random() * 7),
             attack: Math.round(Math.random() * 6),
             health: Math.round(Math.random() * 6),
