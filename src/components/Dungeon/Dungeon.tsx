@@ -1,3 +1,4 @@
+import { TARGET_BUTTON } from "../../common/buttonFunctions";
 import gameService from "../../services/gameService";
 import GameCard from "../GameCard/GameCard";
 import './dungeon.scss'
@@ -28,7 +29,9 @@ export default function Dungeon(props: {
 
             <div className="dungeon-grounds">
                 {playerDungeon.map((cardId, index) => {
-                    const dungeonButtons: any[] = []
+                    const dungeonButtons: any[] = [
+                        TARGET_BUTTON,
+                    ]
                     if(myDungeon && index === playerDungeon.length - 1) {
                         dungeonButtons.push({
                             clickFn: payGroundCard,

@@ -36,6 +36,11 @@ class GameService {
         location: '',
     }
 
+    selectedTarget: any = {
+        id: '',
+        location: '',
+    }
+
     setRenderFn(fn: () => void) {
         this.renderFn = fn;
     }
@@ -97,6 +102,29 @@ class GameService {
         this.players[playerName] = player;
     }
 
+    selectTarget(cardId: string, location: string) {
+        if (this.selectedTarget.id) {
+            this.deselectTarget();
+        }
+
+        this.selectedTarget.id = cardId;
+        this.selectedTarget.location = location;
+
+        this.addLogMessage(`${this.activePlayer} selected ${cardId} from ${location}`);
+        this.renderFn();
+    }
+
+    clearSelectedTargetInfo() {
+        this.selectedTarget.id = '';
+        this.selectedTarget.location = '';
+    }
+
+    deselectTarget() {
+        this.addLogMessage(`${this.activePlayer} deselected ${this.selectedTarget.id} from ${this.selectedTarget.location}`);
+        this.clearSelectedTargetInfo();
+        this.renderFn();
+    }
+
     selectCard(cardId: string, location: string) {
         if (this.selectedCard.id) {
             this.deselectCard();
@@ -115,8 +143,8 @@ class GameService {
     }
 
     deselectCard() {
-        this.clearSelectedCardInfo();
         this.addLogMessage(`${this.activePlayer} deselected ${this.selectedCard.id} from ${this.selectedCard.location}`);
+        this.clearSelectedCardInfo();
         this.renderFn();
     }
 

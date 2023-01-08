@@ -1,3 +1,4 @@
+import { SELECT_CARD_BUTTON } from "../../common/buttonFunctions";
 import gameService from "../../services/gameService";
 import GameCard from "../GameCard/GameCard";
 import './hand.scss'
@@ -11,10 +12,6 @@ export default function Hand(props: {
     const hand = gameService.players[playerId].hand;
 
     const myHand = activePlayer === playerId;
-
-    const selectCardFunction = (cardId: string, location: string) => {
-        gameService.selectCard(cardId, location);
-    }
 
     const payHandCard = (cardId: string, location: string) => {
         gameService.payHandCard(activePlayer, cardId, location);
@@ -32,10 +29,7 @@ export default function Hand(props: {
                 {hand?.map((cardId, idx) => {
                     const cardInfo = gameService.cardRef[cardId];
                     const cardButtons = [
-                        {
-                            clickFn: selectCardFunction,
-                            label: 'Select'
-                        },
+                        SELECT_CARD_BUTTON,
                         {
                             clickFn: payHandCard,
                             label: 'Pay Hand'

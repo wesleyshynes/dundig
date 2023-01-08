@@ -1,3 +1,4 @@
+import { TARGET_BUTTON } from "../../common/buttonFunctions";
 import gameService from "../../services/gameService";
 import GameCard from "../GameCard/GameCard";
 
@@ -13,7 +14,7 @@ export default function Entrance(props: {
                 <GameCard
                     cardId={playerEntrance.id}
                     location={`players.${playerId}.entrance`}
-                    buttons={[]}
+                    buttons={[TARGET_BUTTON]}
                 />
         </div>
     )

@@ -6,6 +6,7 @@ import CommonGround from './components/CommonGround/CommonGround';
 import SelectedCard from './components/SelectedCard/SelectedCard';
 import GameLog from './components/GameLog/GameLog';
 import GameOptions from './components/GameOptions/GameOptions';
+import SelectedTarget from './components/SelectedTarget/SelectedTarget';
 
 function App() {
 
@@ -49,6 +50,8 @@ function App() {
       <GameOptions />
 
       <SelectedCard />
+
+      <SelectedTarget />
 
       <PlayerField playerId={activePlayer} />
 

@@ -12,6 +12,14 @@ export default function GameCard(props: {
     const { cardId, location } = props;
     const cardInfo = gameService.cardRef[props.cardId];
 
+    if(!cardInfo) {
+        return (
+            <div className="game-card">
+                No card info
+            </div>
+        )
+    }
+
     return (
         <div className="game-card">
             {cardInfo.name} <br />

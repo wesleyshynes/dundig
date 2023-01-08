@@ -17,6 +17,7 @@ export default function SelectedCard() {
 
     return (
         <div className="selected-card">
+            SELECTED CARD: <br />
             <GameCard
                 cardId={id}
                 location={location}
