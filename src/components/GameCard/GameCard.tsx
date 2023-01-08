@@ -31,6 +31,18 @@ export default function GameCard(props: {
                 </div>
             )} <br />
 
+            {cardInfo.type === 'ground' && (
+                <div className="ground-occupants">
+                    OCCUPANTS: <br />
+                    {cardInfo.occupants.map((occupant, idx) => (
+                        <div key={idx}>
+                            {occupant}
+                        </div>
+                    ))}
+                    <br />
+                </div>
+            )}
+
             <div className="card-buttons">
                 {props.buttons.map((button, idx) => (
                     <button

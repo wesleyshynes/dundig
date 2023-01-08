@@ -1,5 +1,6 @@
 import { generateDeck } from "../generators/deckGenerator";
 import { generatePlayer } from "../generators/playerGenerator";
+import { CardCost } from "../types/cost.model";
 import { Ground } from "../types/ground.model";
 import { Novelty } from "../types/novelty.model";
 import { Player } from "../types/player.model";
@@ -51,8 +52,8 @@ class GameService {
     }
 
     startGame() {
-        this.addPlayer({playerName: 'player1', playerId: 'player1'});
-        this.addPlayer({playerName: 'player2', playerId: 'player2'});
+        this.addPlayer({ playerName: 'player1', playerId: 'player1' });
+        this.addPlayer({ playerName: 'player2', playerId: 'player2' });
 
         this.playerTurn = 'player1';
         this.activePlayer = 'player1';
@@ -231,6 +232,50 @@ class GameService {
         }
         // todo: remove stuff from discarded card and send to respective places
         this.renderFn();
+    }
+
+    playSentientInGround(
+        playerId: string,
+        cardId: string,
+        cardLocationString: string,
+        locationId: string
+    ) {
+        const card = this.cardRef[cardId]
+        const locationCard = this.cardRef[locationId];
+        if (
+            card.type !== 'sentient' ||
+            locationCard.type !== 'ground' ||
+            !this.canPayCost(playerId, card.cost)
+        ) {
+            return;
+        }
+
+        this.addLogMessage(`${playerId} is playing ${cardId} in ${locationId}`);
+
+        this.payCardCost(playerId, card.cost);
+        this.removeCardFromLocation(cardId, cardLocationString);
+        locationCard.occupants.push(cardId);
+        this.deselectCard()
+        this.deselectTarget()
+        this.renderFn();
+    }
+
+    canPayCost(playerId: string, cost: CardCost) {
+        const playerResources = this.players[playerId].resources;
+
+        const { hand, ground } = cost
+
+        if (hand && playerResources.hand < hand) return false;
+        if (ground && playerResources.ground < ground) return false;
+
+        return true;
+    }
+
+    payCardCost(playerId: string, cost: CardCost) {
+        const playerResources = this.players[playerId].resources;
+        const { hand, ground } = cost
+        if (hand) playerResources.hand -= hand;
+        if (ground) playerResources.ground -= ground;
     }
 
 

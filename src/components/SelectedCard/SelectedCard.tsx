@@ -4,7 +4,7 @@ import './selectedCard.scss'
 
 export default function SelectedCard() {
 
-    const { selectedCard } = gameService;
+    const { activePlayer, selectedCard, selectedTarget } = gameService;
     const { id, location } = selectedCard
 
     if (!id) {
@@ -14,6 +14,33 @@ export default function SelectedCard() {
             </div>
         )
     }
+    
+    const cardButtons = [{
+        label: 'deselect',
+        clickFn: () => { gameService.deselectCard() }
+    }]
+    
+    const cardInfo = gameService.cardRef[id];
+
+    if(cardInfo.type === 'sentient') {
+        const canPayCost = gameService.canPayCost(activePlayer, cardInfo.cost);
+        const targetInfo = gameService.cardRef[selectedTarget.id];
+        console.log(targetInfo)
+        if(targetInfo && canPayCost && targetInfo.type === 'ground') {
+            // TODO: add button to play at target
+            cardButtons.push({
+                label: 'play',
+                clickFn: () => { 
+                    gameService.playSentientInGround(
+                        activePlayer,
+                        id,
+                        location,
+                        targetInfo.id
+                    )
+                 }
+            })
+        }
+    }
 
     return (
         <div className="selected-card">
@@ -21,10 +48,7 @@ export default function SelectedCard() {
             <GameCard
                 cardId={id}
                 location={location}
-                buttons={[{
-                    label: 'deselect',
-                    clickFn: () => { gameService.deselectCard() }
-                }]}
+                buttons={cardButtons}
             />
         </div>
     )
