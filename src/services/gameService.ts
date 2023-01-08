@@ -1,3 +1,5 @@
+import { generateDeck } from "../generators/deckGenerator";
+import { generatePlayer } from "../generators/playerGenerator";
 import { Ground } from "../types/ground.model";
 import { Novelty } from "../types/novelty.model";
 import { Player } from "../types/player.model";
@@ -44,8 +46,8 @@ class GameService {
     }
 
     startGame() {
-        this.addPlayer('player1');
-        this.addPlayer('player2');
+        this.addPlayer({playerName: 'player1', playerId: 'player1'});
+        this.addPlayer({playerName: 'player2', playerId: 'player2'});
 
         this.playerTurn = 'player1';
         this.activePlayer = 'player1';
@@ -72,95 +74,25 @@ class GameService {
 
     addLogMessage(message: string) {
         this.log.push(message);
-        // this.renderFn();
     }
 
-    addPlayer(playerName: string) {
-        const player: Player = {
-            id: playerName,
-            name: playerName,
-            deck: [],
-            hand: [],
-            entrance: {
-                id: `${playerName}entrance`,
-                owner: playerName,
-                name: `${playerName}'s Entrance`,
-                type: 'ground',
-                occupants: [],
-                connections: [],
-                level: 0,
-            },
-            dungeon: [],
-            garrison: {
-                id: `${playerName}garrison`,
-                owner: playerName,
-                name: `${playerName}'s Garrison`,
-                type: 'ground',
-                occupants: [],
-                connections: [],
-                level: 0,
-            },
-            discard: [],
-            resources: {},
-        };
+    addPlayer(options: { playerName: string, playerId: string }) {
+        const { playerName, playerId } = options;
+        const player: Player = generatePlayer({ playerName, playerId });
 
-        this.cardRef[`${playerName}entrance`] = player.entrance;
-        this.cardRef[`${playerName}garrison`] = player.garrison;
+        this.cardRef[`${playerId}entrance`] = player.entrance;
+        this.cardRef[`${playerId}garrison`] = player.garrison;
 
-        this.commonGroud.connections.push(`${playerName}entrance`);
+        this.commonGroud.connections.push(`${playerId}entrance`);
         player.entrance.connections.push('commonGround');
-        player.entrance.connections.push(`${playerName}garrison`);
-        player.garrison.connections.push(`${playerName}entrance`);
+        player.entrance.connections.push(`${playerId}garrison`);
+        player.garrison.connections.push(`${playerId}entrance`);
 
-        // generate deck
-        for (let i = 0; i < 10; i++) {
-            const ground: Ground = {
-                id: `${playerName}ground${i}`,
-                owner: playerName,
-                name: `${playerName}'s Ground ${i}`,
-                type: 'ground',
-                occupants: [],
-                connections: [],
-                level: Math.round(Math.random() * 3),
-            };
-            this.cardRef[`${playerName}ground${i}`] = ground;
-            player.deck.push(`${playerName}ground${i}`);
-        }
-
-        for (let i = 0; i < 5; i++) {
-            const novelty: Novelty = {
-                id: `${playerName}novelty${i}`,
-                owner: playerName,
-                name: `${playerName}'s Novelty ${i}`,
-                type: 'novelty',
-                cost: 0,
-                level: Math.round(Math.random() * 7),
-            };
-            this.cardRef[`${playerName}novelty${i}`] = novelty;
-            player.deck.push(`${playerName}novelty${i}`);
-        }
-
-        for (let i = 0; i < 10; i++) {
-            const sentient: Sentient = {
-                id: `${playerName}sentient${i}`,
-                owner: playerName,
-                name: `${playerName}'s Sentient ${i}`,
-                type: 'sentient',
-                cost: 0,
-                level: Math.round(Math.random() * 7),
-                attack: Math.round(Math.random() * 6),
-                health: Math.round(Math.random() * 6),
-                speed: Math.round(Math.random() * 6),
-            };
-            this.cardRef[`${playerName}sentient${i}`] = sentient;
-            player.deck.push(`${playerName}sentient${i}`);
-        }
-
-        // shuffle deck
-        for (let i = player.deck.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [player.deck[i], player.deck[j]] = [player.deck[j], player.deck[i]];
-        }
+        const playerDeck = generateDeck({ playerName, playerId })
+        player.deck = playerDeck.map(card => {
+            this.cardRef[card.id] = card;
+            return card.id;
+        });
 
         this.players[playerName] = player;
     }
@@ -247,6 +179,30 @@ class GameService {
             }
         }
         return false
+    }
+
+    payHandCard(playerId: string, cardId: string, locationString: string) {
+        this.addLogMessage(`${playerId} is paying ${cardId} from ${locationString}`);
+        this.removeCardFromLocation(cardId, locationString);
+        this.addCardToLocation(cardId, `players.${playerId}.discard`);
+        this.players[playerId].resources.hand += 1;
+        if (this.selectedCard.id === cardId) {
+            this.deselectCard();
+        }
+        // todo: remove stuff from discarded card and send to respective places
+        this.renderFn();
+    }
+
+    payGroundCard(playerId: string, cardId: string, locationString: string) {
+        this.addLogMessage(`${playerId} is paying ${cardId} from ${locationString}`);
+        this.removeCardFromLocation(cardId, locationString);
+        this.addCardToLocation(cardId, `players.${playerId}.discard`);
+        this.players[playerId].resources.ground += 1;
+        if (this.selectedCard.id === cardId) {
+            this.deselectCard();
+        }
+        // todo: remove stuff from discarded card and send to respective places
+        this.renderFn();
     }
 
 

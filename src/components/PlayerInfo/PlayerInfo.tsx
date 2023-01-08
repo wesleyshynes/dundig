@@ -13,6 +13,7 @@ export default function PlayerInfo(props: {
         <div className="player-info-details">
             player field: {playerId} <br />
             name: {name} <br />
+            Resources: {playerInfo.resources.hand} H, {playerInfo.resources.ground} G
         </div>
     )
 

@@ -16,6 +16,10 @@ export default function Hand(props: {
         gameService.selectCard(cardId, location);
     }
 
+    const payHandCard = (cardId: string, location: string) => {
+        gameService.payHandCard(activePlayer, cardId, location);
+    }
+
     return (
         <div className="hand">
             hand: {hand.length}
@@ -29,6 +33,10 @@ export default function Hand(props: {
                             {
                                 clickFn: selectCardFunction,
                                 label: 'Select'
+                            },
+                            {
+                                clickFn: payHandCard,
+                                label: 'Pay Hand'
                             }
                         ]}
                     />

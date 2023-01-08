@@ -7,6 +7,12 @@ export default function Dungeon(props: {
 }) {
     const { playerId } = props;
     const playerDungeon = gameService.players[playerId].dungeon;
+    const { activePlayer } = gameService;
+    const myDungeon = playerId === activePlayer;
+
+    const payGroundCard = (cardId: string, location: string) => {
+        gameService.payGroundCard(playerId, cardId, location)
+    }
 
     return (
         <div className="dungeon">
@@ -22,13 +28,19 @@ export default function Dungeon(props: {
 
             <div className="dungeon-grounds">
                 {playerDungeon.map((cardId, index) => {
-                    // const card = gameService.cardRef[cardId];
+                    const dungeonButtons: any[] = []
+                    if(myDungeon && index === playerDungeon.length - 1) {
+                        dungeonButtons.push({
+                            clickFn: payGroundCard,
+                            label: 'Pay Ground',
+                        })
+                    }
                     return (
                         <div key={index} className="dungeon-card">
                             <GameCard
                                 cardId={cardId}
                                 location={`players.${playerId}.dungeon`}
-                                buttons={[]}
+                                buttons={dungeonButtons}
                             />
                         </div>
                     )
