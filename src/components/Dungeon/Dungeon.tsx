@@ -35,7 +35,7 @@ export default function Dungeon(props: {
                     if(myDungeon && index === playerDungeon.length - 1) {
                         dungeonButtons.push({
                             clickFn: payGroundCard,
-                            label: 'Pay Ground',
+                            label: 'pay ground',
                         })
                     }
                     return (

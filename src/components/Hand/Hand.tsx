@@ -32,13 +32,13 @@ export default function Hand(props: {
                         SELECT_CARD_BUTTON,
                         {
                             clickFn: payHandCard,
-                            label: 'Pay Hand'
+                            label: 'pay hand'
                         }
                     ]
                     if(cardInfo.type === 'ground') {
                         cardButtons.push({
                             clickFn: playGroundCard,
-                            label: 'Play Ground'
+                            label: 'play ground'
                         })
                     }
                     return myHand ? (
