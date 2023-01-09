@@ -174,6 +174,13 @@ class GameService {
                     location = location[locationName];
                 }
             })
+        } else {
+            location = this.cardRef
+            splitLocation.forEach((locationName) => {
+                if (locationName && location[locationName] !== null) {
+                    location = location[locationName];
+                }
+            })
         }
         return location
     }
@@ -210,6 +217,19 @@ class GameService {
         return false
     }
 
+    clearGroundOccupants(cardId: string) {
+        const cardInfo = this.cardRef[cardId];
+        if (cardInfo.type === 'ground' && cardInfo.occupants) {
+            while (cardInfo.occupants.length > 0) {
+                const occupantId = cardInfo.occupants.pop();
+                if (!occupantId) continue;
+                const occupantCard = this.cardRef[occupantId];
+                const occupantOwner = occupantCard.owner;
+                this.addCardToLocation(occupantId, `players.${occupantOwner}.discard`);
+            }
+        }
+    }
+
     payHandCard(playerId: string, cardId: string, locationString: string) {
         this.addLogMessage(`${playerId} is paying ${cardId} from ${locationString}`);
         this.removeCardFromLocation(cardId, locationString);
@@ -231,6 +251,7 @@ class GameService {
             this.deselectCard();
         }
         // todo: remove stuff from discarded card and send to respective places
+        this.clearGroundOccupants(cardId);
         this.renderFn();
     }
 

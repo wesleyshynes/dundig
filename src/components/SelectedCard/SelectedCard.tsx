@@ -25,7 +25,6 @@ export default function SelectedCard() {
     if(cardInfo.type === 'sentient') {
         const canPayCost = gameService.canPayCost(activePlayer, cardInfo.cost);
         const targetInfo = gameService.cardRef[selectedTarget.id];
-        console.log(targetInfo)
         if(targetInfo && canPayCost && targetInfo.type === 'ground') {
             // TODO: add button to play at target
             cardButtons.push({

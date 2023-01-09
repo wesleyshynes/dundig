@@ -12,13 +12,16 @@ export default function GameCard(props: {
     const { cardId, location } = props;
     const cardInfo = gameService.cardRef[props.cardId];
 
-    if(!cardInfo) {
+    if (!cardInfo) {
         return (
             <div className="game-card">
                 No card info
             </div>
         )
     }
+
+    const cardLocation = location.split('.');
+    const cardLocationType = cardLocation[cardLocation.length - 1];
 
     return (
         <div className="game-card">
@@ -34,11 +37,38 @@ export default function GameCard(props: {
             {cardInfo.type === 'ground' && (
                 <div className="ground-occupants">
                     OCCUPANTS: <br />
-                    {cardInfo.occupants.map((occupant, idx) => (
-                        <div key={idx}>
-                            {occupant}
-                        </div>
-                    ))}
+                    {cardInfo.occupants.map((occupant, idx) => {
+                        const buttons = []
+                        const currentSpot = `cardRef.${cardId}.occupants`
+                        if (cardLocationType === 'dungeon') {
+                            const locationOwner = cardLocation[1]
+                            const locationRef = gameService.parseLocation(location)
+                            const locationSpot = locationRef.indexOf(cardId)
+                            const moveBack = locationSpot === 0 ? `players.${locationOwner}.entrance.occupants` :
+                                `cardRef.${locationRef[locationSpot - 1]}.occupants`
+                            buttons.push({
+                                label: '<-',
+                                clickFn: () => {
+                                    gameService.removeCardFromLocation(occupant, currentSpot)
+                                    gameService.addCardToLocation(occupant, moveBack)
+                                    gameService.renderFn()
+                                }
+                            })
+                        }
+                        return (
+                            <div key={idx}>
+                                {occupant}
+                                {buttons.map((btn, jdx) => (
+                                    <button
+                                        key={jdx}
+                                        onClick={() => btn.clickFn()}>
+                                        {btn.label}
+                                    </button>
+                                ))}
+                            </div>
+                        )
+                    }
+                    )}
                     <br />
                 </div>
             )}
