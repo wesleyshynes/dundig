@@ -1,13 +1,16 @@
 import gameService from "../../services/gameService";
 import './gameCard.scss'
 
+interface CardButtonEntry {
+    clickFn: (cardId: string, location: string) => void,
+    label: string,
+    disable?: boolean
+}
+
 export default function GameCard(props: {
     cardId: string,
     location: string,
-    buttons: {
-        clickFn: (cardId: string, location: string) => void,
-        label: string
-    }[]
+    buttons: CardButtonEntry[]
 }) {
 
     const { activePlayer } = gameService;
@@ -44,6 +47,8 @@ export default function GameCard(props: {
                         const buttons = []
                         const currentSpot = `cardRef.${cardId}.occupants`
 
+                        const isOccupantOwner = activePlayer === gameService.cardRef[occupant].owner
+
                         // DUNGEON OCCUPANT ACTIONS
                         if (cardLocationType === 'dungeon') {
                             const locationOwner = cardLocation[1]
@@ -52,23 +57,19 @@ export default function GameCard(props: {
 
                             const moveBack = locationSpot === 0 ? `players.${locationOwner}.entrance.occupants` :
                                 `cardRef.${locationRef[locationSpot - 1]}.occupants`
-                            buttons.push({
+                            isOccupantOwner && buttons.push({
                                 label: '<-',
                                 clickFn: () => {
-                                    gameService.removeCardFromLocation(occupant, currentSpot)
-                                    gameService.addCardToLocation(occupant, moveBack)
-                                    gameService.renderFn()
+                                    gameService.moveCardToLocation(occupant, currentSpot, moveBack)
                                 }
                             })
 
                             const moveForward = locationSpot === locationRef.length - 1 ? `players.${locationOwner}.garrison.occupants` :
                                 `cardRef.${locationRef[locationSpot + 1]}.occupants`
-                            buttons.push({
+                            isOccupantOwner && buttons.push({
                                 label: '->',
                                 clickFn: () => {
-                                    gameService.removeCardFromLocation(occupant, currentSpot)
-                                    gameService.addCardToLocation(occupant, moveForward)
-                                    gameService.renderFn()
+                                    gameService.moveCardToLocation(occupant, currentSpot, moveForward)
                                 }
                             })
                         }
@@ -80,20 +81,16 @@ export default function GameCard(props: {
                             const moveEntrance = `players.${locationOwner}.entrance.occupants`
                             const moveBackward = locationOwnerDungeon.length > 0 ? `cardRef.${locationOwnerDungeon[locationOwnerDungeon.length - 1]}.occupants` :
                                 moveEntrance
-                            buttons.push({
+                            isOccupantOwner && buttons.push({
                                 label: '<-',
                                 clickFn: () => {
-                                    gameService.removeCardFromLocation(occupant, currentSpot)
-                                    gameService.addCardToLocation(occupant, moveBackward)
-                                    gameService.renderFn()
+                                    gameService.moveCardToLocation(occupant, currentSpot, moveBackward)
                                 }
                             })
-                            buttons.push({
+                            isOccupantOwner && buttons.push({
                                 label: 'entrance',
                                 clickFn: () => {
-                                    gameService.removeCardFromLocation(occupant, currentSpot)
-                                    gameService.addCardToLocation(occupant, moveEntrance)
-                                    gameService.renderFn()
+                                    gameService.moveCardToLocation(occupant, currentSpot, moveEntrance)
                                 }
                             })
                         }
@@ -104,21 +101,17 @@ export default function GameCard(props: {
                             const locationOwnerDungeon = gameService.players[locationOwner].dungeon
                             const moveIn = locationOwnerDungeon.length > 0 ? `cardRef.${locationOwnerDungeon[0]}.occupants` :
                                 `players.${locationOwner}.garrison.occupants`
-                            buttons.push({
+                            isOccupantOwner && buttons.push({
                                 label: '->',
                                 clickFn: () => {
-                                    gameService.removeCardFromLocation(occupant, currentSpot)
-                                    gameService.addCardToLocation(occupant, moveIn)
-                                    gameService.renderFn()
+                                    gameService.moveCardToLocation(occupant, currentSpot, moveIn)
                                 }
                             })
                             const moveToCommonGround = `cardRef.commonGround.occupants`
-                            buttons.push({
+                            isOccupantOwner && buttons.push({
                                 label: 'common',
                                 clickFn: () => {
-                                    gameService.removeCardFromLocation(occupant, currentSpot)
-                                    gameService.addCardToLocation(occupant, moveToCommonGround)
-                                    gameService.renderFn()
+                                    gameService.moveCardToLocation(occupant, currentSpot, moveToCommonGround)
                                 }
                             })
                         }
@@ -126,23 +119,19 @@ export default function GameCard(props: {
                         // COMMON GROUND OCCUPANT ACTIONS
                         if (cardLocationType === 'commonGround') {
                             const moveToMyEntrance = `players.${activePlayer}.entrance.occupants`
-                            buttons.push({
+                            isOccupantOwner && buttons.push({
                                 label: 'my entrance',
                                 clickFn: () => {
-                                    gameService.removeCardFromLocation(occupant, currentSpot)
-                                    gameService.addCardToLocation(occupant, moveToMyEntrance)
-                                    gameService.renderFn()
+                                    gameService.moveCardToLocation(occupant, currentSpot, moveToMyEntrance)
                                 }
                             })
                             const opponentName = Object.keys(gameService.players).filter(player => player !== activePlayer)[0]
                             if (opponentName) {
                                 const moveToOpponentEntrance = `players.${opponentName}.entrance.occupants`
-                                buttons.push({
+                                isOccupantOwner && buttons.push({
                                     label: `${opponentName}'s entrance`,
                                     clickFn: () => {
-                                        gameService.removeCardFromLocation(occupant, currentSpot)
-                                        gameService.addCardToLocation(occupant, moveToOpponentEntrance)
-                                        gameService.renderFn()
+                                        gameService.moveCardToLocation(occupant, currentSpot, moveToOpponentEntrance)
                                     }
                                 })
                             }
@@ -170,6 +159,7 @@ export default function GameCard(props: {
                 {props.buttons.map((button, idx) => (
                     <button
                         key={idx}
+                        disabled={button.disable}
                         onClick={() => button.clickFn(cardId, location)}>
                         {button.label}
                     </button>

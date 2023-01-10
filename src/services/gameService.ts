@@ -299,6 +299,13 @@ class GameService {
         if (ground) playerResources.ground -= ground;
     }
 
+    moveCardToLocation(cardId: string, currentLocationString: string, targetLocationString: string) {
+        this.addLogMessage(`${cardId} is moving from ${currentLocationString} to ${targetLocationString}`)
+        this.removeCardFromLocation(cardId, currentLocationString)
+        this.addCardToLocation(cardId, targetLocationString)
+        this.renderFn()
+    }
+
 
 }
 

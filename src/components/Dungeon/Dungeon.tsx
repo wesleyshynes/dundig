@@ -32,10 +32,12 @@ export default function Dungeon(props: {
                     const dungeonButtons: any[] = [
                         TARGET_BUTTON,
                     ]
-                    if(myDungeon && index === playerDungeon.length - 1) {
+                    const groundsInfo = gameService.cardRef[cardId];
+                    if(myDungeon && index === playerDungeon.length - 1 && groundsInfo.type === 'ground') {
                         dungeonButtons.push({
                             clickFn: payGroundCard,
                             label: 'pay ground',
+                            disable: groundsInfo.occupants.length > 0
                         })
                     }
                     return (
