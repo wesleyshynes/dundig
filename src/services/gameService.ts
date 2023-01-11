@@ -301,6 +301,8 @@ class GameService {
 
     moveCardToLocation(cardId: string, currentLocationString: string, targetLocationString: string) {
         this.addLogMessage(`${cardId} is moving from ${currentLocationString} to ${targetLocationString}`)
+        this.deselectCard()
+        this.deselectTarget()
         this.removeCardFromLocation(cardId, currentLocationString)
         this.addCardToLocation(cardId, targetLocationString)
         this.renderFn()
