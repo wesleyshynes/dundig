@@ -1,5 +1,5 @@
 import gameService from "../../services/gameService";
-import { Sentient } from "../../types/sentient.model";
+// import { Sentient } from "../../types/sentient.model";
 
 export default function Occupant(props: {
     occupantId: string,
@@ -31,7 +31,8 @@ export default function Occupant(props: {
     const buttons = []
 
     const moveTo = (targetLocation: string) => {
-        gameService.moveCardToLocation(occupantId, occupantLocation, targetLocation)
+        gameService.handleGroundNavigation(occupantId, occupantLocation, targetLocation)
+        // gameService.moveCardToLocation(occupantId, occupantLocation, targetLocation)
     }
 
     // DUNGEON OCCUPANT ACTIONS
@@ -127,13 +128,13 @@ export default function Occupant(props: {
         {
             label: 'select',
             clickFn: () => {
-                gameService.selectCard({ cardId: occupantId, location: occupantLocation})
+                gameService.selectCard({ cardId: occupantId, location: occupantLocation })
             }
         },
         {
             label: 'target',
             clickFn: () => {
-                gameService.selectTarget({ cardId: occupantId, location: occupantLocation})
+                gameService.selectTarget({ cardId: occupantId, location: occupantLocation })
             }
         }
     )
@@ -142,7 +143,7 @@ export default function Occupant(props: {
     return (
         <div className="occupant">
             {occupantId} <br />
-            A:{ attack }  / H:{ health } / S:{ speed } <br />
+            A:{attack}  / H:{health} / S:{speed} <br />
             {buttons.map((btn, jdx) => (
                 <button
                     key={jdx}

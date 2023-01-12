@@ -46,7 +46,7 @@ export const generateDeck = (options: { playerName: string, playerId: string }):
             },
             level: Math.round(Math.random() * 7),
             attack: Math.round(Math.random() * 6),
-            health: Math.round(Math.random() * 6),
+            health: 1 + Math.round(Math.random() * 5),
             speed: Math.round(Math.random() * 6),
         };
         deck.push(sentient);

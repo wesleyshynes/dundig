@@ -124,7 +124,7 @@ class GameService {
     }
 
     deselectTarget() {
-        if(!this.selectedTarget.id) return;
+        if (!this.selectedTarget.id) return;
         this.addLogMessage(`${this.activePlayer} untargeted ${this.selectedTarget.id} from ${this.selectedTarget.location}`);
         this.clearSelectedTargetInfo();
         this.renderFn();
@@ -147,7 +147,7 @@ class GameService {
     }
 
     deselectCard() {
-        if(!this.selectedCard.id) return;
+        if (!this.selectedCard.id) return;
         this.addLogMessage(`${this.activePlayer} deselected ${this.selectedCard.id} from ${this.selectedCard.location}`);
         this.clearSelectedCardInfo();
         this.renderFn();
@@ -279,8 +279,9 @@ class GameService {
         this.addLogMessage(`${playerId} is playing ${cardId} in ${locationId}`);
 
         this.payCardCost(playerId, card.cost);
-        this.removeCardFromLocation(cardId, cardLocationString);
-        locationCard.occupants.push(cardId);
+        // this.removeCardFromLocation(cardId, cardLocationString);
+        // locationCard.occupants.push(cardId);
+        this.moveCardToLocation(cardId, cardLocationString, `cardRef.${locationId}.occupants`);
         this.deselectCard()
         this.deselectTarget()
         this.renderFn();
@@ -311,6 +312,75 @@ class GameService {
         this.removeCardFromLocation(cardId, currentLocationString)
         this.addCardToLocation(cardId, targetLocationString)
         this.renderFn()
+    }
+
+    handleGroundNavigation(cardId: string, locationString: string, targetLocationString: string) {
+        // const card = this.cardRef[cardId];
+        // const targetCard = this.cardRef[targetId];
+        this.moveCardToLocation(cardId, locationString, targetLocationString)
+        this.resolveGround(targetLocationString)
+    }
+
+    resolveGround(groundLocation: string) {
+        const location = this.parseLocation(groundLocation);
+        const teams: { [p: string]: string[] } = {}
+        const nonAttackers: string[] = []
+
+        location.forEach((cardId: string) => {
+            const card = this.cardRef[cardId];
+            if(card.type !== 'sentient') { return }
+            if(card.attack <= 0) { nonAttackers.push(cardId) }
+            if (!teams[card.owner]) { teams[card.owner] = [] }
+            teams[card.owner].push(cardId)
+        })
+
+        if (Object.keys(teams).length === 1) { return }
+
+        while(Object.keys(teams).length > 1) {
+            const team1 = Object.keys(teams)[0]
+            const team2 = Object.keys(teams)[1]
+            const team1CardId = teams[team1].pop()
+            const team2CardId = teams[team2].pop()
+            if (!team1CardId || !team2CardId) {
+                break;
+            };
+            const team1Card = this.cardRef[team1CardId]
+            const team2Card = this.cardRef[team2CardId]
+            if(team1Card.type !== 'sentient' || team2Card.type !== 'sentient') {
+                break;
+            }
+            team1Card.health -= team2Card.attack
+            team2Card.health -= team1Card.attack
+
+            if (team1Card.health <= 0) {
+                this.moveCardToLocation(team1CardId, groundLocation, `players.${team1}.discard`)
+            } else {
+                teams[team1].push(team1CardId)
+            }
+
+            if (team2Card.health <= 0) {
+                this.moveCardToLocation(team2CardId, groundLocation, `players.${team2}.discard`)
+            } else {
+                teams[team2].push(team2CardId)
+            }
+
+            if (teams[team1].length === 0) {
+                delete teams[team1]
+            }
+            if (teams[team2].length === 0) {
+                delete teams[team2]
+            }
+        }
+
+        if(Object.keys(teams).length === 1) {
+            const winner = Object.keys(teams)[0]
+            nonAttackers.forEach((cardId: string) => {
+                const card = this.cardRef[cardId]
+                if(card.type !== 'sentient') { return }
+                if(card.owner === winner) { return }
+                this.moveCardToLocation(cardId, groundLocation, `players.${winner}.discard`)
+            })
+        }
     }
 
 
