@@ -3,7 +3,7 @@ import Occupant from "../Occupant/Occupant";
 import './gameCard.scss'
 
 interface CardButtonEntry {
-    clickFn: (cardId: string, location: string) => void,
+    clickFn: (o: { cardId: string, location: string }) => void,
     label: string,
     disable?: boolean
 }
@@ -73,7 +73,7 @@ export default function GameCard(props: {
                     <button
                         key={idx}
                         disabled={button.disable}
-                        onClick={() => button.clickFn(cardId, location)}>
+                        onClick={() => button.clickFn({ cardId, location })}>
                         {button.label}
                     </button>
                 ))}

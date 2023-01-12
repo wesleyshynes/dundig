@@ -13,12 +13,14 @@ export default function Hand(props: {
 
     const myHand = activePlayer === playerId;
 
-    const payHandCard = (cardId: string, location: string) => {
+    const payHandCard = (o: { cardId: string, location: string }) => {
+        const { cardId, location } = o;
         gameService.payHandCard(activePlayer, cardId, location);
     }
 
-    const playGroundCard = (cardId: string, location: string) => {
-        gameService.selectCard(cardId, location);
+    const playGroundCard = (o: { cardId: string, location: string }) => {
+        const { cardId, location } = o;
+        gameService.selectCard({ cardId, location });
         gameService.playCardHere(`players.${playerId}.dungeon`);
     }
 
@@ -35,7 +37,7 @@ export default function Hand(props: {
                             label: 'pay hand'
                         }
                     ]
-                    if(cardInfo.type === 'ground') {
+                    if (cardInfo.type === 'ground') {
                         cardButtons.push({
                             clickFn: playGroundCard,
                             label: 'play ground'

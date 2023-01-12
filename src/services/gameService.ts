@@ -46,8 +46,9 @@ class GameService {
         this.renderFn = fn;
     }
 
-    setActivePlayer(playerName: string) {
-        this.activePlayer = playerName;
+    setActivePlayer(activePlayerOptions: { playerId: string }) {
+        const { playerId } = activePlayerOptions;
+        this.activePlayer = playerId;
         this.renderFn();
     }
 
@@ -63,17 +64,18 @@ class GameService {
         this.renderFn();
     }
 
-    drawCard(playerName: string) {
-        const player = this.players[playerName];
+    drawCard(drawCardOptions: { playerId: string }) {
+        const { playerId } = drawCardOptions;
+        const player = this.players[playerId];
         if (player.deck.length > 0) {
             const cardId = player.deck.pop();
             if (cardId) {
                 player.hand.push(cardId);
             }
-            this.addLogMessage(`${playerName} drew a card`);
+            this.addLogMessage(`${playerId} drew a card`);
         } else {
             this.gameState = 'ended';
-            this.addLogMessage(`GAME OVER ${playerName} tried to draw a card but has no cards left in their deck`);
+            this.addLogMessage(`GAME OVER ${playerId} tried to draw a card but has no cards left in their deck`);
         }
         this.renderFn()
     }
@@ -103,7 +105,8 @@ class GameService {
         this.players[playerName] = player;
     }
 
-    selectTarget(cardId: string, location: string) {
+    selectTarget(selectOptions: { cardId: string, location: string }) {
+        const { cardId, location } = selectOptions;
         if (this.selectedTarget.id) {
             this.deselectTarget();
         }
@@ -126,7 +129,8 @@ class GameService {
         this.renderFn();
     }
 
-    selectCard(cardId: string, location: string) {
+    selectCard(selectOptions: { cardId: string, location: string }) {
+        const { cardId, location } = selectOptions;
         if (this.selectedCard.id) {
             this.deselectCard();
         }

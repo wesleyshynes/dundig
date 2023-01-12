@@ -7,7 +7,7 @@ export default function GameOptions() {
             {gameService.players && Object.keys(gameService.players).map((playerId) => (
                 <button
                     key={playerId}
-                    onClick={() => gameService.setActivePlayer(playerId)}
+                    onClick={() => gameService.setActivePlayer({ playerId })}
                     disabled={activePlayer === playerId}>
                     {playerId}
                 </button>

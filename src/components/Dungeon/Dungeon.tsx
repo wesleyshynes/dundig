@@ -11,7 +11,8 @@ export default function Dungeon(props: {
     const { activePlayer } = gameService;
     const myDungeon = playerId === activePlayer;
 
-    const payGroundCard = (cardId: string, location: string) => {
+    const payGroundCard = (o: { cardId: string, location: string }) => {
+        const { cardId, location } = o;
         gameService.payGroundCard(playerId, cardId, location)
     }
 
@@ -33,7 +34,7 @@ export default function Dungeon(props: {
                         TARGET_BUTTON,
                     ]
                     const groundsInfo = gameService.cardRef[cardId];
-                    if(myDungeon && index === playerDungeon.length - 1 && groundsInfo.type === 'ground') {
+                    if (myDungeon && index === playerDungeon.length - 1 && groundsInfo.type === 'ground') {
                         dungeonButtons.push({
                             clickFn: payGroundCard,
                             label: 'pay ground',

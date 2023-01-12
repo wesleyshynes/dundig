@@ -8,7 +8,7 @@ export default function Deck(props: {
     const { activePlayer } = gameService;
 
     const drawCard = () => {
-        gameService.drawCard(playerId);
+        gameService.drawCard({ playerId });
     }
 
     return (

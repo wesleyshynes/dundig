@@ -1,7 +1,7 @@
 import gameService from '../services/gameService';
 
-const targetFunction = (cardId: string, location: string) => {
-    gameService.selectTarget(cardId, location);
+const targetFunction = (o: { cardId: string, location: string }) => {
+    gameService.selectTarget(o);
 }
 
 export const TARGET_BUTTON = {
@@ -9,8 +9,8 @@ export const TARGET_BUTTON = {
     clickFn: targetFunction
 }
 
-const selectCardFunction = (cardId: string, location: string) => {
-    gameService.selectCard(cardId, location);
+const selectCardFunction = (o: { cardId: string, location: string }) => {
+    gameService.selectCard(o);
 }
 
 export const SELECT_CARD_BUTTON = {

@@ -127,13 +127,13 @@ export default function Occupant(props: {
         {
             label: 'select',
             clickFn: () => {
-                gameService.selectCard(occupantId, occupantLocation)
+                gameService.selectCard({ cardId: occupantId, location: occupantLocation})
             }
         },
         {
             label: 'target',
             clickFn: () => {
-                gameService.selectTarget(occupantId, occupantLocation)
+                gameService.selectTarget({ cardId: occupantId, location: occupantLocation})
             }
         }
     )
