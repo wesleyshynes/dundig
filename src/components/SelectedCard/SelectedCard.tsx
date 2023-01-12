@@ -25,7 +25,9 @@ export default function SelectedCard() {
     if(cardInfo.type === 'sentient') {
         const canPayCost = gameService.canPayCost(activePlayer, cardInfo.cost);
         const targetInfo = gameService.cardRef[selectedTarget.id];
-        if(targetInfo && canPayCost && targetInfo.type === 'ground') {
+        const splitTarget = selectedTarget.location.split('.');
+        const targetLocation = splitTarget.pop();
+        if(targetInfo && canPayCost && targetInfo.type === 'ground' && targetLocation !== 'discard') {
             // TODO: add button to play at target
             cardButtons.push({
                 label: 'play',

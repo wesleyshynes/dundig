@@ -20,8 +20,7 @@ export default function Hand(props: {
 
     const playGroundCard = (o: { cardId: string, location: string }) => {
         const { cardId, location } = o;
-        gameService.selectCard({ cardId, location });
-        gameService.playCardHere(`players.${playerId}.dungeon`);
+        gameService.moveCardToLocation(cardId, location, `players.${playerId}.dungeon`)
     }
 
     return (

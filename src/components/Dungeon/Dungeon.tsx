@@ -20,9 +20,9 @@ export default function Dungeon(props: {
         <div className="dungeon">
             dungeon: {playerDungeon.length} <br />
 
-            {gameService.canPlayCardHere(`players.${playerId}.dungeon`) && (
+            {gameService.canPlaySelectedCardHere(`players.${playerId}.dungeon`) && (
                 <button onClick={() => {
-                    gameService.playCardHere(`players.${playerId}.dungeon`)
+                    gameService.playSelectedCardHere(`players.${playerId}.dungeon`)
                 }}>
                     Play Room Here
                 </button>

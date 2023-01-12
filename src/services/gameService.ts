@@ -114,7 +114,7 @@ class GameService {
         this.selectedTarget.id = cardId;
         this.selectedTarget.location = location;
 
-        this.addLogMessage(`${this.activePlayer} selected ${cardId} from ${location}`);
+        this.addLogMessage(`${this.activePlayer} targeted ${cardId} from ${location}`);
         this.renderFn();
     }
 
@@ -124,7 +124,8 @@ class GameService {
     }
 
     deselectTarget() {
-        this.addLogMessage(`${this.activePlayer} deselected ${this.selectedTarget.id} from ${this.selectedTarget.location}`);
+        if(!this.selectedTarget.id) return;
+        this.addLogMessage(`${this.activePlayer} untargeted ${this.selectedTarget.id} from ${this.selectedTarget.location}`);
         this.clearSelectedTargetInfo();
         this.renderFn();
     }
@@ -134,10 +135,8 @@ class GameService {
         if (this.selectedCard.id) {
             this.deselectCard();
         }
-
         this.selectedCard.id = cardId;
         this.selectedCard.location = location;
-
         this.addLogMessage(`${this.activePlayer} selected ${cardId} from ${location}`);
         this.renderFn();
     }
@@ -148,6 +147,7 @@ class GameService {
     }
 
     deselectCard() {
+        if(!this.selectedCard.id) return;
         this.addLogMessage(`${this.activePlayer} deselected ${this.selectedCard.id} from ${this.selectedCard.location}`);
         this.clearSelectedCardInfo();
         this.renderFn();
@@ -189,7 +189,7 @@ class GameService {
         return location
     }
 
-    playCardHere(locationString: string) {
+    playSelectedCardHere(locationString: string) {
         this.removeCardFromLocation(this.selectedCard.id, this.selectedCard.location);
         this.addCardToLocation(this.selectedCard.id, locationString);
         this.addLogMessage(`${this.activePlayer} played ${this.selectedCard.id} to ${locationString}`);
@@ -198,7 +198,7 @@ class GameService {
         this.renderFn();
     }
 
-    canPlayCardHere(locationString: string) {
+    canPlaySelectedCardHere(locationString: string) {
         if (!this.selectedCard.id) return false;
 
         const cardSelected = this.cardRef[this.selectedCard.id];
@@ -251,9 +251,10 @@ class GameService {
         this.removeCardFromLocation(cardId, locationString);
         this.addCardToLocation(cardId, `players.${playerId}.discard`);
         this.players[playerId].resources.ground += 1;
-        if (this.selectedCard.id === cardId) {
-            this.deselectCard();
-        }
+
+        this.deselectCard();
+        this.deselectTarget();
+
         // todo: remove stuff from discarded card and send to respective places
         this.clearGroundOccupants(cardId);
         this.renderFn();
