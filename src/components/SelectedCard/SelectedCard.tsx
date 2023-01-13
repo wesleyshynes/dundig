@@ -14,31 +14,47 @@ export default function SelectedCard() {
             </div>
         )
     }
-    
+
     const cardButtons = [{
         label: 'deselect',
         clickFn: () => { gameService.deselectCard() }
     }]
-    
+
     const cardInfo = gameService.cardRef[id];
 
-    if(cardInfo.type === 'sentient') {
+    if (cardInfo.type === 'sentient') {
         const canPayCost = gameService.canPayCost(activePlayer, cardInfo.cost);
         const targetInfo = gameService.cardRef[selectedTarget.id];
         const splitTarget = selectedTarget.location.split('.');
         const targetLocation = splitTarget.pop();
-        if(targetInfo && canPayCost && targetInfo.type === 'ground' && targetLocation !== 'discard') {
+        if (targetInfo && canPayCost && targetInfo.type === 'ground' && targetLocation !== 'discard') {
             // TODO: add button to play at target
             cardButtons.push({
                 label: 'play',
-                clickFn: () => { 
+                clickFn: () => {
                     gameService.playSentientInGround(
                         activePlayer,
                         id,
                         location,
                         targetInfo.id
                     )
-                 }
+                }
+            })
+        }
+    }
+
+    if (cardInfo.type === 'novelty') {
+        const canPayCost = gameService.canPayCost(activePlayer, cardInfo.cost);
+        if (canPayCost) {
+            cardButtons.push({
+                label: 'play',
+                clickFn: () => {
+                    gameService.playNovelty(
+                        activePlayer,
+                        id,
+                        location
+                    )
+                }
             })
         }
     }

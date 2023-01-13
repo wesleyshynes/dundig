@@ -273,15 +273,35 @@ class GameService {
             locationCard.type !== 'ground' ||
             !this.canPayCost(playerId, card.cost)
         ) {
-            return;
+            return
         }
 
         this.addLogMessage(`${playerId} is playing ${cardId} in ${locationId}`);
 
         this.payCardCost(playerId, card.cost);
-        // this.removeCardFromLocation(cardId, cardLocationString);
-        // locationCard.occupants.push(cardId);
+        // TODO: add something to determine and execute what the sentient does on play
         this.moveCardToLocation(cardId, cardLocationString, `cardRef.${locationId}.occupants`);
+        this.deselectCard()
+        this.deselectTarget()
+        this.renderFn();
+    }
+
+    playNovelty(
+        playerId: string,
+        cardId: string,
+        cardLocationString: string,
+    ) {
+        const card = this.cardRef[cardId]
+        if (
+            card.type !== 'novelty' ||
+            !this.canPayCost(playerId, card.cost)
+        ) {
+            return
+        }
+        this.addLogMessage(`${playerId} is playing ${cardId} from ${cardLocationString}`);
+        // TODO: add something to determine and execute what the novelty does
+        this.payCardCost(playerId, card.cost);
+        this.moveCardToLocation(cardId, cardLocationString, `players.${card.owner}.discard`);
         this.deselectCard()
         this.deselectTarget()
         this.renderFn();
@@ -310,6 +330,7 @@ class GameService {
         this.deselectCard()
         this.deselectTarget()
         this.removeCardFromLocation(cardId, currentLocationString)
+        // TODO: check card location type and do stuff, like if discard then reset card stats, clear occupants etc...
         this.addCardToLocation(cardId, targetLocationString)
         this.renderFn()
     }
@@ -328,15 +349,16 @@ class GameService {
 
         location.forEach((cardId: string) => {
             const card = this.cardRef[cardId];
-            if(card.type !== 'sentient') { return }
-            if(card.attack <= 0) { nonAttackers.push(cardId) }
+            if (card.type !== 'sentient') { return }
+            if (card.attack <= 0) { 
+                nonAttackers.push(cardId)
+                return
+            }
             if (!teams[card.owner]) { teams[card.owner] = [] }
             teams[card.owner].push(cardId)
         })
 
-        if (Object.keys(teams).length === 1) { return }
-
-        while(Object.keys(teams).length > 1) {
+        while (Object.keys(teams).length > 1) {
             const team1 = Object.keys(teams)[0]
             const team2 = Object.keys(teams)[1]
             const team1CardId = teams[team1].pop()
@@ -346,7 +368,7 @@ class GameService {
             };
             const team1Card = this.cardRef[team1CardId]
             const team2Card = this.cardRef[team2CardId]
-            if(team1Card.type !== 'sentient' || team2Card.type !== 'sentient') {
+            if (team1Card.type !== 'sentient' || team2Card.type !== 'sentient') {
                 break;
             }
             team1Card.health -= team2Card.attack
@@ -372,13 +394,13 @@ class GameService {
             }
         }
 
-        if(Object.keys(teams).length === 1) {
+        if (Object.keys(teams).length === 1) {
             const winner = Object.keys(teams)[0]
             nonAttackers.forEach((cardId: string) => {
                 const card = this.cardRef[cardId]
-                if(card.type !== 'sentient') { return }
-                if(card.owner === winner) { return }
-                this.moveCardToLocation(cardId, groundLocation, `players.${winner}.discard`)
+                if (card.type !== 'sentient') { return }
+                if (card.owner === winner) { return }
+                this.moveCardToLocation(cardId, groundLocation, `players.${card.owner}.discard`)
             })
         }
     }
