@@ -118,15 +118,11 @@ class GameService {
         this.renderFn();
     }
 
-    clearSelectedTargetInfo() {
-        this.selectedTarget.id = '';
-        this.selectedTarget.location = '';
-    }
-
     deselectTarget() {
         if (!this.selectedTarget.id) return;
         this.addLogMessage(`${this.activePlayer} untargeted ${this.selectedTarget.id} from ${this.selectedTarget.location}`);
-        this.clearSelectedTargetInfo();
+        this.selectedTarget.id = '';
+        this.selectedTarget.location = '';
         this.renderFn();
     }
 
@@ -141,20 +137,18 @@ class GameService {
         this.renderFn();
     }
 
-    clearSelectedCardInfo() {
-        this.selectedCard.id = '';
-        this.selectedCard.location = '';
-    }
-
     deselectCard() {
         if (!this.selectedCard.id) return;
         this.addLogMessage(`${this.activePlayer} deselected ${this.selectedCard.id} from ${this.selectedCard.location}`);
-        this.clearSelectedCardInfo();
+        this.selectedCard.id = '';
+        this.selectedCard.location = '';
         this.renderFn();
     }
 
     addCardToLocation(cardId: string, location: string) {
         const locationArray = this.parseLocation(location);
+        const cardIndex = locationArray.indexOf(cardId);
+        if (cardIndex > -1) return;
         locationArray.push(cardId);
     }
 
@@ -190,11 +184,9 @@ class GameService {
     }
 
     playSelectedCardHere(locationString: string) {
-        this.removeCardFromLocation(this.selectedCard.id, this.selectedCard.location);
-        this.addCardToLocation(this.selectedCard.id, locationString);
+        this.moveCardToLocation(this.selectedCard.id, this.selectedCard.location, locationString);
         this.addLogMessage(`${this.activePlayer} played ${this.selectedCard.id} to ${locationString}`);
-        this.selectedCard.id = '';
-        this.selectedCard.location = '';
+        this.deselectCard();
         this.renderFn();
     }
 
@@ -226,18 +218,15 @@ class GameService {
         if (cardInfo.type === 'ground' && cardInfo.occupants) {
             while (cardInfo.occupants.length > 0) {
                 const occupantId = cardInfo.occupants.pop();
-                if (!occupantId) continue;
-                const occupantCard = this.cardRef[occupantId];
-                const occupantOwner = occupantCard.owner;
-                this.addCardToLocation(occupantId, `players.${occupantOwner}.discard`);
+                if (!occupantId) { continue; }
+                this.sendToDiscard(occupantId, `cardRef.${cardId}.occupants`);
             }
         }
     }
 
     payHandCard(playerId: string, cardId: string, locationString: string) {
         this.addLogMessage(`${playerId} is paying ${cardId} from ${locationString}`);
-        this.removeCardFromLocation(cardId, locationString);
-        this.addCardToLocation(cardId, `players.${playerId}.discard`);
+        this.sendToDiscard(cardId, locationString);
         this.players[playerId].resources.hand += 1;
         if (this.selectedCard.id === cardId) {
             this.deselectCard();
@@ -248,8 +237,7 @@ class GameService {
 
     payGroundCard(playerId: string, cardId: string, locationString: string) {
         this.addLogMessage(`${playerId} is paying ${cardId} from ${locationString}`);
-        this.removeCardFromLocation(cardId, locationString);
-        this.addCardToLocation(cardId, `players.${playerId}.discard`);
+        this.sendToDiscard(cardId, locationString);
         this.players[playerId].resources.ground += 1;
 
         this.deselectCard();
@@ -301,7 +289,7 @@ class GameService {
         this.addLogMessage(`${playerId} is playing ${cardId} from ${cardLocationString}`);
         // TODO: add something to determine and execute what the novelty does
         this.payCardCost(playerId, card.cost);
-        this.moveCardToLocation(cardId, cardLocationString, `players.${card.owner}.discard`);
+        this.sendToDiscard(cardId, cardLocationString);
         this.deselectCard()
         this.deselectTarget()
         this.renderFn();
@@ -309,20 +297,17 @@ class GameService {
 
     canPayCost(playerId: string, cost: CardCost) {
         const playerResources = this.players[playerId].resources;
-
         const { hand, ground } = cost
-
-        if (hand && playerResources.hand < hand) return false;
-        if (ground && playerResources.ground < ground) return false;
-
+        if (hand && playerResources.hand < hand) { return false; }
+        if (ground && playerResources.ground < ground) { return false; }
         return true;
     }
 
     payCardCost(playerId: string, cost: CardCost) {
         const playerResources = this.players[playerId].resources;
         const { hand, ground } = cost
-        if (hand) playerResources.hand -= hand;
-        if (ground) playerResources.ground -= ground;
+        if (hand) { playerResources.hand -= hand; }
+        if (ground) { playerResources.ground -= ground; }
     }
 
     moveCardToLocation(cardId: string, currentLocationString: string, targetLocationString: string) {
@@ -336,8 +321,6 @@ class GameService {
     }
 
     handleGroundNavigation(cardId: string, locationString: string, targetLocationString: string) {
-        // const card = this.cardRef[cardId];
-        // const targetCard = this.cardRef[targetId];
         this.moveCardToLocation(cardId, locationString, targetLocationString)
         this.resolveGround(targetLocationString)
     }
@@ -350,7 +333,7 @@ class GameService {
         location.forEach((cardId: string) => {
             const card = this.cardRef[cardId];
             if (card.type !== 'sentient') { return }
-            if (card.attack <= 0) { 
+            if (card.attack <= 0) {
                 nonAttackers.push(cardId)
                 return
             }
@@ -375,13 +358,13 @@ class GameService {
             team2Card.health -= team1Card.attack
 
             if (team1Card.health <= 0) {
-                this.moveCardToLocation(team1CardId, groundLocation, `players.${team1}.discard`)
+                this.sendToDiscard(team1CardId, groundLocation)
             } else {
                 teams[team1].push(team1CardId)
             }
 
             if (team2Card.health <= 0) {
-                this.moveCardToLocation(team2CardId, groundLocation, `players.${team2}.discard`)
+                this.sendToDiscard(team2CardId, groundLocation)
             } else {
                 teams[team2].push(team2CardId)
             }
@@ -400,9 +383,19 @@ class GameService {
                 const card = this.cardRef[cardId]
                 if (card.type !== 'sentient') { return }
                 if (card.owner === winner) { return }
-                this.moveCardToLocation(cardId, groundLocation, `players.${card.owner}.discard`)
+                this.sendToDiscard(cardId, groundLocation)
             })
         }
+    }
+
+    sendToDiscard(cardId: string, locationString: string) {
+        const cardInfo = this.cardRef[cardId]
+        if (cardInfo.type === 'sentient') {
+            cardInfo.health = cardInfo.originalStats.health
+            cardInfo.attack = cardInfo.originalStats.attack
+            cardInfo.speed = cardInfo.originalStats.speed
+        }
+        this.moveCardToLocation(cardId, locationString, `players.${cardInfo.owner}.discard`)
     }
 
 

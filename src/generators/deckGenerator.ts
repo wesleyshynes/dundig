@@ -2,7 +2,7 @@ import { Ground } from "../types/ground.model";
 import { Novelty } from "../types/novelty.model";
 import { Sentient } from "../types/sentient.model";
 
-export const generateDeck = (options: { playerName: string, playerId: string }): Array< Ground | Sentient | Novelty > => {
+export const generateDeck = (options: { playerName: string, playerId: string }): Array<Ground | Sentient | Novelty> => {
     const { playerName, playerId } = options;
     const deck: Array<Ground | Sentient | Novelty> = [];
     // generate deck
@@ -35,6 +35,11 @@ export const generateDeck = (options: { playerName: string, playerId: string }):
     }
 
     for (let i = 0; i < 10; i++) {
+        const generatedStats = {
+            attack: Math.round(Math.random() * 6),
+            health: 1 + Math.round(Math.random() * 5),
+            speed: Math.round(Math.random() * 6),
+        }
         const sentient: Sentient = {
             id: `${playerId}sentient${i}`,
             owner: playerName,
@@ -45,9 +50,8 @@ export const generateDeck = (options: { playerName: string, playerId: string }):
                 ground: Math.round(Math.random() * 2),
             },
             level: Math.round(Math.random() * 7),
-            attack: Math.round(Math.random() * 6),
-            health: 1 + Math.round(Math.random() * 5),
-            speed: Math.round(Math.random() * 6),
+            ...generatedStats,
+            originalStats: {...generatedStats},
         };
         deck.push(sentient);
     }

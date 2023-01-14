@@ -7,4 +7,9 @@ export interface Sentient extends Card {
     health: number;
     attack: number;
     speed: number;
+    originalStats: {
+        health: number;
+        attack: number;
+        speed: number;
+    }
 }
