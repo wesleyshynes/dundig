@@ -5,6 +5,7 @@ import { Ground } from "../types/ground.model";
 import { Novelty } from "../types/novelty.model";
 import { Player } from "../types/player.model";
 import { Sentient } from "../types/sentient.model";
+import noveltyEffectService from "./cardEffects/noveltyEffectService";
 
 class GameService {
     players: { [v: string]: Player } = {};
@@ -103,6 +104,10 @@ class GameService {
         });
 
         this.players[playerName] = player;
+    }
+
+    getCardInfo(cardId: string) {
+        return this.cardRef[cardId];
     }
 
     selectTarget(selectOptions: { cardId: string, location: string }) {
@@ -288,10 +293,77 @@ class GameService {
         }
         this.addLogMessage(`${playerId} is playing ${cardId} from ${cardLocationString}`);
         // TODO: add something to determine and execute what the novelty does
+
+        const {
+            effectId,
+            effectArgs,
+            effectType
+        } = card;
+
+        const effectDetails = noveltyEffectService.getEffectDetails(effectId);
+
+        const effectRequirements: any = {}
+        let validRequirements = true;
+
+        const { effect, requirements } = effectDetails;
+
+        if (requirements) {
+            // loop through requirement keys
+            Object.keys(requirements).forEach((requirementKey: string) => {
+                const requirement = requirements[requirementKey];
+                const { type, source, location } = requirement;
+                const splitSource = source.split('.');
+                const sourceRoot = splitSource[0];
+                if (sourceRoot === 'effectArgs') {
+                    const extraArgKey = splitSource[1];
+                    effectRequirements[requirementKey] = effectArgs[extraArgKey];
+                    return
+                }
+                if (sourceRoot === 'selectedTarget') {
+                    if (!this.selectedTarget || !this.selectedTarget.id) {
+                        validRequirements = false;
+                        return
+                    }
+                    const selectedCard = this.cardRef[this.selectedTarget.id];
+                    if (!selectedCard || selectedCard.type !== type) {
+                        validRequirements = false;
+                        return
+                    }
+                    // TODO: add to postcheck for card
+                    if (location) {
+                        const selectedCardLocation = this.selectedTarget.location.split('.');
+                        const selectedCardLocationType = selectedCardLocation[selectedCardLocation.length - 1];
+                        if (location === 'field') {
+                            if (selectedCardLocationType !== 'occupants') {
+                                validRequirements = false;
+                                return
+                            }
+                            effectRequirements[requirementKey] = selectedCard;
+                        }
+                    }
+                }
+
+            })
+        }
+
+        if (!validRequirements) {
+            this.addLogMessage(`Requirements not met for ${cardId}`);
+            this.renderFn();
+            return
+        }
+        
         this.payCardCost(playerId, card.cost);
-        this.sendToDiscard(cardId, cardLocationString);
+
+        console.log('effectRequirements', effectRequirements)
+
+        effect(effectRequirements)
+
+        if (effectType === 'once') {
+            this.sendToDiscard(cardId, cardLocationString);
+        }
         this.deselectCard()
-        this.deselectTarget()
+        this.deselectTarget()     
+
         this.renderFn();
     }
 

@@ -46,6 +46,12 @@ export default function GameCard(props: {
                 </div>
             )}
 
+            {cardInfo.type === 'novelty' && (
+                <div className="novelty-stats">
+                    {cardInfo.effectId} <br />
+                </div>
+            )}
+
             <br />
 
             {cardInfo.type === 'ground' && (

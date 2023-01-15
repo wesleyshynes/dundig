@@ -20,6 +20,26 @@ export const generateDeck = (options: { playerName: string, playerId: string }):
     }
 
     for (let i = 0; i < 5; i++) {
+
+        const genEffect: {
+            effectId: string,
+            effectType: 'once' | 'continuous',
+            effectArgs: any,
+        }[] = [
+            {
+                effectId: 'doNothing',
+                effectType: 'once',
+                effectArgs: {},
+            },
+            {
+                effectId: 'dealDamagetoTargetSentient',
+                effectType: 'once',
+                effectArgs: {
+                    amount: 1,
+                },
+            }
+        ]
+
         const novelty: Novelty = {
             id: `${playerId}novelty${i}`,
             owner: playerName,
@@ -30,6 +50,10 @@ export const generateDeck = (options: { playerName: string, playerId: string }):
                 ground: Math.round(Math.random() * 2),
             },
             level: Math.round(Math.random() * 7),
+            ...genEffect[Math.round(Math.random() * 1)],
+            // effectType: 'once',
+            // effectId: 'doNothing',
+            // effectArgs: {},
         };
         deck.push(novelty);
     }
@@ -51,7 +75,7 @@ export const generateDeck = (options: { playerName: string, playerId: string }):
             },
             level: Math.round(Math.random() * 7),
             ...generatedStats,
-            originalStats: {...generatedStats},
+            originalStats: { ...generatedStats },
         };
         deck.push(sentient);
     }
