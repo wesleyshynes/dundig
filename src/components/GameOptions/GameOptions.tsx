@@ -12,6 +12,8 @@ export default function GameOptions() {
                     {playerId}
                 </button>
             ))}
+            {/* show game info button */}
+            <button onClick={() => gameService.showGameInfo()}>Log</button>
         </div>
     )
 }

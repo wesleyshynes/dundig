@@ -5,7 +5,7 @@ import './commonGround.scss'
 
 export default function CommonGround(props: {}) {
 
-   const commonGround: Ground = gameService.commonGroud;
+   const commonGround: Ground = gameService.commonGround;
 
     return (
         <div className="common-ground">

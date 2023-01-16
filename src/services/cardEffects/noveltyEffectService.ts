@@ -13,7 +13,6 @@ const noveltyEffectList: any = {
         name: 'Do Nothing',
         description: 'Do nothing',
         effect: (_: any) => {
-            alert('do nothing')
             return true;
         },
         requirements: {}
@@ -24,7 +23,6 @@ const noveltyEffectList: any = {
         description: 'Deal damage to a target sentient on the field',
         effect: (requirements: { target: Sentient, amount: number }) => {
             const { target, amount } = requirements;
-            console.log('Dealing damage to', target.name);
             target.health -= amount
             return true
         },

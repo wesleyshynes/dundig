@@ -20,7 +20,7 @@ class GameService {
 
     renderFn = () => { };
 
-    commonGroud: Ground = {
+    commonGround: Ground = {
         id: 'commonGround',
         owner: '',
         name: 'Common Ground',
@@ -30,7 +30,7 @@ class GameService {
         level: 0,
     };
     cardRef: { [v: string]: Ground | Sentient | Novelty } = {
-        commonGround: this.commonGroud,
+        commonGround: this.commonGround,
     };
 
     selectedCard: any = {
@@ -41,6 +41,21 @@ class GameService {
     selectedTarget: any = {
         id: '',
         location: '',
+    }
+
+    showGameInfo() {
+        console.log('========================================')
+        console.log('cardRef', this.cardRef);
+        console.log('players', this.players);
+        console.log('commonGround', this.commonGround);
+        console.log('playerTurn', this.playerTurn);
+        console.log('activePlayer', this.activePlayer);
+        console.log('gameState', this.gameState);
+        console.log('gameMessage', this.gameMessage);
+        console.log('log', this.log);
+        console.log('renderCount', this.renderCount);
+        console.log('selectedCard', this.selectedCard);
+        console.log('selectedTarget', this.selectedTarget);
     }
 
     setRenderFn(fn: () => void) {
@@ -92,7 +107,7 @@ class GameService {
         this.cardRef[`${playerId}entrance`] = player.entrance;
         this.cardRef[`${playerId}garrison`] = player.garrison;
 
-        this.commonGroud.connections.push(`${playerId}entrance`);
+        this.commonGround.connections.push(`${playerId}entrance`);
         player.entrance.connections.push('commonGround');
         player.entrance.connections.push(`${playerId}garrison`);
         player.garrison.connections.push(`${playerId}entrance`);
@@ -287,21 +302,38 @@ class GameService {
         if (ground) { playerResources.ground -= ground; }
     }
 
-    // BEGIN COMPLICATED STUFF
+    resolveField() {
+        Object.keys(this.players).forEach((playerId: string) => {
+            const player = this.players[playerId];
+            player.dungeon.forEach((cardId: string) => {
+                const card = this.cardRef[cardId];
+                if(card.type !== 'ground') { return }
+                this.resolveGround(`cardRef.${cardId}.occupants`)
+            })
+            this.resolveGround(`cardRef.${player.garrison.id}.occupants`)
+            this.resolveGround(`cardRef.${player.entrance.id}.occupants`)
+        })
+        this.resolveGround(`cardRef.${this.commonGround.id}.occupants`)
+    }
 
     handleGroundNavigation(cardId: string, locationString: string, targetLocationString: string) {
         this.moveCardToLocation(cardId, locationString, targetLocationString)
-        this.resolveGround(targetLocationString)
+        this.resolveField()
     }
 
     resolveGround(groundLocation: string) {
         const location = this.parseLocation(groundLocation);
         const teams: { [p: string]: string[] } = {}
         const nonAttackers: string[] = []
+        const deadSentients: string[] = []
 
         location.forEach((cardId: string) => {
             const card = this.cardRef[cardId];
             if (card.type !== 'sentient') { return }
+            if(card.health <= 0) {
+                deadSentients.push(cardId)
+                return
+            }
             if (card.attack <= 0) {
                 nonAttackers.push(cardId)
                 return
@@ -355,6 +387,10 @@ class GameService {
                 this.sendToDiscard(cardId, groundLocation)
             })
         }
+
+        deadSentients.forEach((sentiendId: string) => {
+            this.sendToDiscard(sentiendId, groundLocation)
+        })
     }
 
     playSentientInGround(
@@ -463,6 +499,9 @@ class GameService {
         if (effectType === 'once') {
             this.sendToDiscard(cardId, cardLocationString);
         }
+
+        this.resolveField()
+
         this.deselectCard()
         this.deselectTarget()
 
