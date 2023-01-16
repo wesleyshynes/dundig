@@ -188,6 +188,29 @@ class GameService {
         return location
     }
 
+    moveCardToLocation(cardId: string, currentLocationString: string, targetLocationString: string) {
+        this.addLogMessage(`${cardId} is moving from ${currentLocationString} to ${targetLocationString}`)
+        this.deselectCard()
+        this.deselectTarget()
+        this.removeCardFromLocation(cardId, currentLocationString)
+        // TODO: check card location type and do stuff, like if discard then reset card stats, clear occupants etc...
+        this.addCardToLocation(cardId, targetLocationString)
+        this.renderFn()
+    }
+
+    sendToDiscard(cardId: string, locationString: string) {
+        const cardInfo = this.cardRef[cardId]
+        if (cardInfo.type === 'sentient') {
+            cardInfo.health = cardInfo.originalStats.health
+            cardInfo.attack = cardInfo.originalStats.attack
+            cardInfo.speed = cardInfo.originalStats.speed
+        }
+        if (cardInfo.type === 'ground') {
+            this.clearGroundOccupants(cardId)
+        }
+        this.moveCardToLocation(cardId, locationString, `players.${cardInfo.owner}.discard`)
+    }
+
     playSelectedCardHere(locationString: string) {
         this.moveCardToLocation(this.selectedCard.id, this.selectedCard.location, locationString);
         this.addLogMessage(`${this.activePlayer} played ${this.selectedCard.id} to ${locationString}`);
@@ -244,13 +267,94 @@ class GameService {
         this.addLogMessage(`${playerId} is paying ${cardId} from ${locationString}`);
         this.sendToDiscard(cardId, locationString);
         this.players[playerId].resources.ground += 1;
-
         this.deselectCard();
         this.deselectTarget();
-
-        // todo: remove stuff from discarded card and send to respective places
-        this.clearGroundOccupants(cardId);
         this.renderFn();
+    }
+
+    canPayCost(playerId: string, cost: CardCost) {
+        const playerResources = this.players[playerId].resources;
+        const { hand, ground } = cost
+        if (hand && playerResources.hand < hand) { return false; }
+        if (ground && playerResources.ground < ground) { return false; }
+        return true;
+    }
+
+    payCardCost(playerId: string, cost: CardCost) {
+        const playerResources = this.players[playerId].resources;
+        const { hand, ground } = cost
+        if (hand) { playerResources.hand -= hand; }
+        if (ground) { playerResources.ground -= ground; }
+    }
+
+    // BEGIN COMPLICATED STUFF
+
+    handleGroundNavigation(cardId: string, locationString: string, targetLocationString: string) {
+        this.moveCardToLocation(cardId, locationString, targetLocationString)
+        this.resolveGround(targetLocationString)
+    }
+
+    resolveGround(groundLocation: string) {
+        const location = this.parseLocation(groundLocation);
+        const teams: { [p: string]: string[] } = {}
+        const nonAttackers: string[] = []
+
+        location.forEach((cardId: string) => {
+            const card = this.cardRef[cardId];
+            if (card.type !== 'sentient') { return }
+            if (card.attack <= 0) {
+                nonAttackers.push(cardId)
+                return
+            }
+            if (!teams[card.owner]) { teams[card.owner] = [] }
+            teams[card.owner].push(cardId)
+        })
+
+        while (Object.keys(teams).length > 1) {
+            const team1 = Object.keys(teams)[0]
+            const team2 = Object.keys(teams)[1]
+            const team1CardId = teams[team1].pop()
+            const team2CardId = teams[team2].pop()
+            if (!team1CardId || !team2CardId) {
+                break;
+            };
+            const team1Card = this.cardRef[team1CardId]
+            const team2Card = this.cardRef[team2CardId]
+            if (team1Card.type !== 'sentient' || team2Card.type !== 'sentient') {
+                break;
+            }
+            team1Card.health -= team2Card.attack
+            team2Card.health -= team1Card.attack
+
+            if (team1Card.health <= 0) {
+                this.sendToDiscard(team1CardId, groundLocation)
+            } else {
+                teams[team1].push(team1CardId)
+            }
+
+            if (team2Card.health <= 0) {
+                this.sendToDiscard(team2CardId, groundLocation)
+            } else {
+                teams[team2].push(team2CardId)
+            }
+
+            if (teams[team1].length === 0) {
+                delete teams[team1]
+            }
+            if (teams[team2].length === 0) {
+                delete teams[team2]
+            }
+        }
+
+        if (Object.keys(teams).length === 1) {
+            const winner = Object.keys(teams)[0]
+            nonAttackers.forEach((cardId: string) => {
+                const card = this.cardRef[cardId]
+                if (card.type !== 'sentient') { return }
+                if (card.owner === winner) { return }
+                this.sendToDiscard(cardId, groundLocation)
+            })
+        }
     }
 
     playSentientInGround(
@@ -351,10 +455,8 @@ class GameService {
             this.renderFn();
             return
         }
-        
-        this.payCardCost(playerId, card.cost);
 
-        console.log('effectRequirements', effectRequirements)
+        this.payCardCost(playerId, card.cost);
 
         effect(effectRequirements)
 
@@ -362,114 +464,10 @@ class GameService {
             this.sendToDiscard(cardId, cardLocationString);
         }
         this.deselectCard()
-        this.deselectTarget()     
+        this.deselectTarget()
 
         this.renderFn();
     }
-
-    canPayCost(playerId: string, cost: CardCost) {
-        const playerResources = this.players[playerId].resources;
-        const { hand, ground } = cost
-        if (hand && playerResources.hand < hand) { return false; }
-        if (ground && playerResources.ground < ground) { return false; }
-        return true;
-    }
-
-    payCardCost(playerId: string, cost: CardCost) {
-        const playerResources = this.players[playerId].resources;
-        const { hand, ground } = cost
-        if (hand) { playerResources.hand -= hand; }
-        if (ground) { playerResources.ground -= ground; }
-    }
-
-    moveCardToLocation(cardId: string, currentLocationString: string, targetLocationString: string) {
-        this.addLogMessage(`${cardId} is moving from ${currentLocationString} to ${targetLocationString}`)
-        this.deselectCard()
-        this.deselectTarget()
-        this.removeCardFromLocation(cardId, currentLocationString)
-        // TODO: check card location type and do stuff, like if discard then reset card stats, clear occupants etc...
-        this.addCardToLocation(cardId, targetLocationString)
-        this.renderFn()
-    }
-
-    handleGroundNavigation(cardId: string, locationString: string, targetLocationString: string) {
-        this.moveCardToLocation(cardId, locationString, targetLocationString)
-        this.resolveGround(targetLocationString)
-    }
-
-    resolveGround(groundLocation: string) {
-        const location = this.parseLocation(groundLocation);
-        const teams: { [p: string]: string[] } = {}
-        const nonAttackers: string[] = []
-
-        location.forEach((cardId: string) => {
-            const card = this.cardRef[cardId];
-            if (card.type !== 'sentient') { return }
-            if (card.attack <= 0) {
-                nonAttackers.push(cardId)
-                return
-            }
-            if (!teams[card.owner]) { teams[card.owner] = [] }
-            teams[card.owner].push(cardId)
-        })
-
-        while (Object.keys(teams).length > 1) {
-            const team1 = Object.keys(teams)[0]
-            const team2 = Object.keys(teams)[1]
-            const team1CardId = teams[team1].pop()
-            const team2CardId = teams[team2].pop()
-            if (!team1CardId || !team2CardId) {
-                break;
-            };
-            const team1Card = this.cardRef[team1CardId]
-            const team2Card = this.cardRef[team2CardId]
-            if (team1Card.type !== 'sentient' || team2Card.type !== 'sentient') {
-                break;
-            }
-            team1Card.health -= team2Card.attack
-            team2Card.health -= team1Card.attack
-
-            if (team1Card.health <= 0) {
-                this.sendToDiscard(team1CardId, groundLocation)
-            } else {
-                teams[team1].push(team1CardId)
-            }
-
-            if (team2Card.health <= 0) {
-                this.sendToDiscard(team2CardId, groundLocation)
-            } else {
-                teams[team2].push(team2CardId)
-            }
-
-            if (teams[team1].length === 0) {
-                delete teams[team1]
-            }
-            if (teams[team2].length === 0) {
-                delete teams[team2]
-            }
-        }
-
-        if (Object.keys(teams).length === 1) {
-            const winner = Object.keys(teams)[0]
-            nonAttackers.forEach((cardId: string) => {
-                const card = this.cardRef[cardId]
-                if (card.type !== 'sentient') { return }
-                if (card.owner === winner) { return }
-                this.sendToDiscard(cardId, groundLocation)
-            })
-        }
-    }
-
-    sendToDiscard(cardId: string, locationString: string) {
-        const cardInfo = this.cardRef[cardId]
-        if (cardInfo.type === 'sentient') {
-            cardInfo.health = cardInfo.originalStats.health
-            cardInfo.attack = cardInfo.originalStats.attack
-            cardInfo.speed = cardInfo.originalStats.speed
-        }
-        this.moveCardToLocation(cardId, locationString, `players.${cardInfo.owner}.discard`)
-    }
-
 
 }
 
