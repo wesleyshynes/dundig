@@ -47,7 +47,8 @@ export default function Occupant(props: {
             label: '<-',
             clickFn: () => {
                 moveTo(moveBack)
-            }
+            },
+            disabled: speed <= 0
         })
 
         const moveForward = locationSpot === locationRef.length - 1 ? `players.${locationOwner}.garrison.occupants` :
@@ -56,7 +57,8 @@ export default function Occupant(props: {
             label: '->',
             clickFn: () => {
                 moveTo(moveForward)
-            }
+            },
+            disabled: speed <= 0
         })
     }
 
@@ -71,13 +73,15 @@ export default function Occupant(props: {
             label: '<-',
             clickFn: () => {
                 moveTo(moveBackward)
-            }
+            },
+            disabled: speed <= 0
         })
         isOccupantOwner && buttons.push({
             label: 'entrance',
             clickFn: () => {
                 moveTo(moveEntrance)
-            }
+            },
+            disabled: speed <= 0
         })
     }
 
@@ -91,14 +95,16 @@ export default function Occupant(props: {
             label: '->',
             clickFn: () => {
                 moveTo(moveIn)
-            }
+            },
+            disabled: speed <= 0
         })
         const moveToCommonGround = `cardRef.commonGround.occupants`
         isOccupantOwner && buttons.push({
             label: 'common',
             clickFn: () => {
                 moveTo(moveToCommonGround)
-            }
+            },
+            disabled: speed <= 0
         })
     }
 
@@ -109,7 +115,8 @@ export default function Occupant(props: {
             label: 'my entrance',
             clickFn: () => {
                 moveTo(moveToMyEntrance)
-            }
+            },
+            disabled: speed <= 0
         })
         const opponentName = Object.keys(gameService.players).filter(player => player !== activePlayer)[0]
         if (opponentName) {
@@ -118,7 +125,8 @@ export default function Occupant(props: {
                 label: `${opponentName}'s entrance`,
                 clickFn: () => {
                     moveTo(moveToOpponentEntrance)
-                }
+                },
+                disabled: speed <= 0
             })
         }
     }
@@ -147,6 +155,7 @@ export default function Occupant(props: {
             {buttons.map((btn, jdx) => (
                 <button
                     key={jdx}
+                    disabled={btn.disabled}
                     onClick={() => btn.clickFn()}>
                     {btn.label}
                 </button>

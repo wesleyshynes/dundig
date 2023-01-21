@@ -318,6 +318,10 @@ class GameService {
 
     handleGroundNavigation(cardId: string, locationString: string, targetLocationString: string) {
         this.moveCardToLocation(cardId, locationString, targetLocationString)
+        const cardInfo = this.cardRef[cardId]
+        if (cardInfo.type === 'sentient') {
+            cardInfo.speed -= 1
+        }
         this.resolveField()
     }
 
