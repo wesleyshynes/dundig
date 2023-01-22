@@ -5,10 +5,14 @@ export default function Deck(props: {
 }) {
     const { playerId } = props;
     const playerDeck = gameService.players[playerId].deck;
-    const { activePlayer } = gameService;
+    const { activePlayer, playerTurn } = gameService;
 
     const drawCard = () => {
         gameService.drawCard({ playerId });
+    }
+
+    const endTurn = () => {
+        gameService.endTurn();
     }
 
     return (
@@ -18,6 +22,11 @@ export default function Deck(props: {
                 disabled={activePlayer !== playerId}
                 onClick={drawCard}>
                 draw
+            </button>
+            <button
+                disabled={activePlayer !== playerId || playerTurn !== activePlayer }
+                onClick={endTurn}>
+                draw and end turn
             </button>
         </div>
     )

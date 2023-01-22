@@ -1,9 +1,14 @@
 import { Player } from "../types/player.model";
 
-export const generatePlayer = (options: {playerName: string, playerId: string}): Player => {
-    const {playerName, playerId} = options;
+export const generatePlayer = (options: {
+    playerName: string,
+    playerId: string,
+    order: number,
+}): Player => {
+    const { playerName, playerId, order } = options;
     return {
         id: playerId,
+        order: order,
         name: playerName,
         deck: [],
         hand: [],

@@ -69,8 +69,8 @@ class GameService {
     }
 
     startGame() {
-        this.addPlayer({ playerName: 'player1', playerId: 'player1' });
-        this.addPlayer({ playerName: 'player2', playerId: 'player2' });
+        this.addPlayer({ playerName: 'player1', playerId: 'player1', order: 0 });
+        this.addPlayer({ playerName: 'player2', playerId: 'player2', order: 1 });
 
         this.playerTurn = 'player1';
         this.activePlayer = 'player1';
@@ -96,13 +96,37 @@ class GameService {
         this.renderFn()
     }
 
+    endTurn() {
+        // draw card for active player
+        this.drawCard({ playerId: this.activePlayer });
+        // end turn for active player
+        const currentTurnOrder = this.players[this.playerTurn].order;
+        const nextTurnOrder = currentTurnOrder + 1 === Object.keys(this.players).length ? 0 : currentTurnOrder + 1;
+        const nextTurnPlayer = Object.keys(this.players).find(playerId => this.players[playerId].order === nextTurnOrder);
+        if (nextTurnPlayer) {
+            this.playerTurn = nextTurnPlayer;
+            this.addLogMessage(`${this.playerTurn}'s turn`);
+        }
+        // handle resetting stuff on the field
+        console.log('implement something to reset stuff on the field')
+        this.renderFn()        
+    }
+
     addLogMessage(message: string) {
         this.log.push(message);
     }
 
-    addPlayer(options: { playerName: string, playerId: string }) {
-        const { playerName, playerId } = options;
-        const player: Player = generatePlayer({ playerName, playerId });
+    addPlayer(options: {
+        playerName: string,
+        playerId: string,
+        order: number
+    }) {
+        const {
+            playerName,
+            playerId,
+            order
+        } = options;
+        const player: Player = generatePlayer({ playerName, playerId, order });
 
         this.cardRef[`${playerId}entrance`] = player.entrance;
         this.cardRef[`${playerId}garrison`] = player.garrison;
@@ -307,7 +331,7 @@ class GameService {
             const player = this.players[playerId];
             player.dungeon.forEach((cardId: string) => {
                 const card = this.cardRef[cardId];
-                if(card.type !== 'ground') { return }
+                if (card.type !== 'ground') { return }
                 this.resolveGround(`cardRef.${cardId}.occupants`)
             })
             this.resolveGround(`cardRef.${player.garrison.id}.occupants`)
@@ -319,6 +343,7 @@ class GameService {
     handleGroundNavigation(cardId: string, locationString: string, targetLocationString: string) {
         this.moveCardToLocation(cardId, locationString, targetLocationString)
         const cardInfo = this.cardRef[cardId]
+        // handle speed usage
         if (cardInfo.type === 'sentient') {
             cardInfo.speed -= 1
         }
@@ -334,7 +359,7 @@ class GameService {
         location.forEach((cardId: string) => {
             const card = this.cardRef[cardId];
             if (card.type !== 'sentient') { return }
-            if(card.health <= 0) {
+            if (card.health <= 0) {
                 deadSentients.push(cardId)
                 return
             }
