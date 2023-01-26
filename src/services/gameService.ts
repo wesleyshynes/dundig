@@ -96,20 +96,39 @@ class GameService {
         this.renderFn()
     }
 
+    handleEndOfTurnCard(cardId: string) {
+        const cardInfo = this.cardRef[cardId];
+        if (cardInfo.type === 'sentient') {
+            cardInfo.speed = cardInfo.originalStats.speed;
+        }
+    }
+
     endTurn() {
-        // draw card for active player
         this.drawCard({ playerId: this.activePlayer });
-        // end turn for active player
         const currentTurnOrder = this.players[this.playerTurn].order;
         const nextTurnOrder = currentTurnOrder + 1 === Object.keys(this.players).length ? 0 : currentTurnOrder + 1;
         const nextTurnPlayer = Object.keys(this.players).find(playerId => this.players[playerId].order === nextTurnOrder);
+
+        this.commonGround.occupants.forEach(this.handleEndOfTurnCard)
+        Object.keys(this.players).forEach((playerId: string) => {
+            const player = this.players[playerId];
+            player.resources.hand = 0;
+            player.resources.ground = 0;
+            player.dungeon.forEach((cardId: string) => {
+                const card = this.cardRef[cardId];
+                if (card.type !== 'ground') { return }
+                card.occupants.forEach(this.handleEndOfTurnCard)
+            })
+            player.garrison.occupants.forEach(this.handleEndOfTurnCard)
+            player.entrance.occupants.forEach(this.handleEndOfTurnCard)
+        })
+
         if (nextTurnPlayer) {
             this.playerTurn = nextTurnPlayer;
             this.addLogMessage(`${this.playerTurn}'s turn`);
         }
-        // handle resetting stuff on the field
-        console.log('implement something to reset stuff on the field')
-        this.renderFn()        
+
+        this.renderFn()
     }
 
     addLogMessage(message: string) {
