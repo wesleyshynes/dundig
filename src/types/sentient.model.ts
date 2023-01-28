@@ -12,4 +12,10 @@ export interface Sentient extends Card {
         attack: number;
         speed: number;
     }
+    modifiers: {
+        health: number;
+        attack: number;
+        speed: number;
+    }
+    novelties: string[];
 }

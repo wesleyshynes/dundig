@@ -13,7 +13,10 @@ const noveltyEffectList: any = {
         name: 'Do Nothing',
         description: 'Do nothing',
         effect: (_: any) => {
-            return true;
+            return {
+                success: true,
+                moveTo: 'discard'
+            };
         },
         requirements: {}
     },
@@ -24,7 +27,10 @@ const noveltyEffectList: any = {
         effect: (requirements: { target: Sentient, amount: number }) => {
             const { target, amount } = requirements;
             target.health -= amount
-            return true
+            return {
+                success: true,
+                moveTo: 'discard'
+            }
         },
         requirements: {
             target: {
@@ -38,6 +44,81 @@ const noveltyEffectList: any = {
             }
         }
     },
+    modifySentientStats: {
+        id: 'modifySentientStats',
+        name: 'Modify Sentient Stats',
+        description: `Modify a sentient's stats`,
+        effect: (requirements: { target: Sentient, amount: any, cardId: string }) => {
+            const {
+                target,
+                amount,
+                // cardId,
+            } = requirements;
+            const {
+                attack,
+                health,
+                speed,
+            } = amount
+
+            if (attack) {
+                target.attack += attack;
+                target.modifiers.attack += attack;
+            }
+            if (health) {
+                target.health += health;
+                target.modifiers.health += health;
+            }
+            if (speed) {
+                target.speed += speed;
+                target.modifiers.speed += speed;
+            }
+
+            return {
+                success: true,
+                moveTo: `cardRef.${target.id}.novelties`
+            };
+        },
+        requirements: {
+            target: {
+                type: 'sentient',
+                source: 'selectedTarget',
+                location: 'field',
+            },
+            amount: {
+                type: 'object',
+                source: 'effectArgs.amount'
+            },
+        },
+        cleanupEffect: (requirements: { target: Sentient, cardId: string, amount: any }) => {
+            const {
+                target,
+                // cardId,
+                amount,
+            } = requirements;
+            const {
+                attack,
+                health,
+                speed,
+            } = amount
+
+            if(attack) {
+                target.attack -= attack;
+                target.modifiers.attack -= attack;
+            }
+            if(health) {
+                target.health -= health;
+                target.modifiers.health -= health;
+            }
+            if(speed) {
+                target.speed -= speed;
+                target.modifiers.speed -= speed;
+            }
+
+            return {
+                success: true
+            }
+        },
+    }
 }
 
 

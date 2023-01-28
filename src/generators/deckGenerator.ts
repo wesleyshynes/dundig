@@ -19,7 +19,7 @@ export const generateDeck = (options: { playerName: string, playerId: string }):
         deck.push(ground);
     }
 
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 10; i++) {
 
         const genEffect: {
             effectId: string,
@@ -37,6 +37,17 @@ export const generateDeck = (options: { playerName: string, playerId: string }):
                 effectArgs: {
                     amount: 1,
                 },
+            },
+            {
+                effectId: 'modifySentientStats',
+                effectType: 'continuous',
+                effectArgs: {
+                    amount: {
+                        attack: 10,
+                        health: 10,
+                        speed: 10,
+                    },
+                }
             }
         ]
 
@@ -50,7 +61,7 @@ export const generateDeck = (options: { playerName: string, playerId: string }):
                 ground: Math.round(Math.random() * 2),
             },
             level: Math.round(Math.random() * 7),
-            ...genEffect[Math.round(Math.random() * 1)],
+            ...genEffect[Math.round(Math.random() *  2)],
             // effectType: 'once',
             // effectId: 'doNothing',
             // effectArgs: {},
@@ -76,6 +87,12 @@ export const generateDeck = (options: { playerName: string, playerId: string }):
             level: Math.round(Math.random() * 7),
             ...generatedStats,
             originalStats: { ...generatedStats },
+            modifiers: {
+                attack: 0,
+                health: 0,
+                speed: 0,
+            },
+            novelties: [],
         };
         deck.push(sentient);
     }

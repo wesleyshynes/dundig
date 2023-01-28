@@ -5,15 +5,13 @@ export default function GameOptions() {
     return (
         <div className="dev-options">
             {gameService.players && Object.keys(gameService.players).map((playerId) => (
-                <div key={playerId}>
+                <div key={`${playerId}-dev-options`}>
                     <button
-                        key={playerId}
                         onClick={() => gameService.setActivePlayer({ playerId })}
                         disabled={activePlayer === playerId}>
                         play as {playerId}
                     </button>
                     <button
-                        key={playerId}
                         onClick={() => {
                             gameService.players[playerId].resources.hand += 1
                             gameService.players[playerId].resources.ground += 1
