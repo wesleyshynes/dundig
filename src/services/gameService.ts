@@ -472,8 +472,8 @@ class GameService {
             })
         }
 
-        deadSentients.forEach((sentiendId: string) => {
-            this.sendToDiscard(sentiendId, groundLocation)
+        deadSentients.forEach((sentientId: string) => {
+            this.sendToDiscard(sentientId, groundLocation)
         })
     }
 
