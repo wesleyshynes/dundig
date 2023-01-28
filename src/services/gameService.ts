@@ -521,7 +521,7 @@ class GameService {
         const {
             effectId,
             effectArgs,
-            effectType
+            // effectType
         } = card;
 
         const effectDetails = noveltyEffectService.getEffectDetails(effectId);
