@@ -259,48 +259,13 @@ class GameService {
     sendToDiscard(cardId: string, locationString: string) {
         const cardInfo = this.cardRef[cardId]
         if (cardInfo.type === 'novelty') {
-            const { effectId, effectArgs } = cardInfo
-            const locationSplit = locationString.split('.')
-            const baseLocation = locationSplit.shift()
-            if (baseLocation === 'cardRef') {
-                const locationCardId = locationSplit.shift()
-                if (locationCardId) {
-                    const locationCard = this.cardRef[locationCardId]
-                    const effectDetails = noveltyEffectService.getEffectDetails(effectId);
-                    if (effectDetails) {
-                        const { cleanupEffect } = effectDetails
-                        if (cleanupEffect) {
-                            cleanupEffect({
-                                target: locationCard,
-                                cardId: cardId,
-                                ...effectArgs
-                            })
-                        }
-                    }
-                }
-            }
+            this.clearNovelty(cardId, locationString)
         }
-
         if (cardInfo.type === 'sentient') {
-            while (cardInfo.novelties.length > 0) {
-                const noveltyId = cardInfo.novelties.pop()
-                if (noveltyId) {
-                    this.sendToDiscard(noveltyId, `cardRef.${cardId}.novelties`)
-                }
-            }
-
-            cardInfo.health = cardInfo.originalStats.health
-            cardInfo.attack = cardInfo.originalStats.attack
-            cardInfo.speed = cardInfo.originalStats.speed
-
-            cardInfo.modifiers = {
-                attack: 0,
-                health: 0,
-                speed: 0
-            }
+            this.clearSentient(cardId)
         }
         if (cardInfo.type === 'ground') {
-            this.clearGroundOccupants(cardId)
+            this.clearGround(cardId)
         }
         this.moveCardToLocation(cardId, locationString, `players.${cardInfo.owner}.discard`)
     }
@@ -335,9 +300,62 @@ class GameService {
         return false
     }
 
-    clearGroundOccupants(cardId: string) {
+    clearNovelty(cardId: string, locationString: string) {
         const cardInfo = this.cardRef[cardId];
-        if (cardInfo.type === 'ground' && cardInfo.occupants) {
+        if (cardInfo.type !== 'novelty') {
+            return;
+        }
+        const { effectId, effectArgs } = cardInfo
+        const locationSplit = locationString.split('.')
+        const baseLocation = locationSplit.shift()
+        if (baseLocation === 'cardRef') {
+            const locationCardId = locationSplit.shift()
+            if (locationCardId) {
+                const locationCard = this.cardRef[locationCardId]
+                const effectDetails = noveltyEffectService.getEffectDetails(effectId);
+                if (effectDetails) {
+                    const { cleanupEffect } = effectDetails
+                    if (cleanupEffect) {
+                        cleanupEffect({
+                            target: locationCard,
+                            cardId: cardId,
+                            ...effectArgs
+                        })
+                    }
+                }
+            }
+        }
+    }
+
+    clearSentient(cardId: string) {
+        const cardInfo = this.cardRef[cardId];
+        if (cardInfo.type !== 'sentient') {
+            return;
+        }
+        while (cardInfo.novelties.length > 0) {
+            const noveltyId = cardInfo.novelties.pop()
+            if (noveltyId) {
+                this.sendToDiscard(noveltyId, `cardRef.${cardId}.novelties`)
+            }
+        }
+
+        cardInfo.health = cardInfo.originalStats.health
+        cardInfo.attack = cardInfo.originalStats.attack
+        cardInfo.speed = cardInfo.originalStats.speed
+
+        cardInfo.modifiers = {
+            attack: 0,
+            health: 0,
+            speed: 0
+        }
+    }
+
+    clearGround(cardId: string) {
+        const cardInfo = this.cardRef[cardId];
+        if (cardInfo.type !== 'ground') {
+            return
+        }
+        if (cardInfo.occupants) {
             while (cardInfo.occupants.length > 0) {
                 const occupantId = cardInfo.occupants.pop();
                 if (!occupantId) { continue; }
@@ -525,10 +543,13 @@ class GameService {
         } = card;
 
         const effectDetails = noveltyEffectService.getEffectDetails(effectId);
-
-        const effectRequirements: any = {
-            cardId
+        if(!effectDetails) {
+            this.addLogMessage(`No effect found for ${cardId}`);
+            this.renderFn();
+            return
         }
+
+        const effectRequirements: any = {}
         let validRequirements = true;
 
         const { effect, requirements } = effectDetails;
@@ -587,17 +608,13 @@ class GameService {
             moveTo
         } = effectResult;
 
-        if(moveTo) {
-            if(moveTo === 'discard') {
+        if (moveTo) {
+            if (moveTo === 'discard') {
                 this.sendToDiscard(cardId, cardLocationString);
             } else {
                 this.moveCardToLocation(cardId, cardLocationString, moveTo);
             }
         }
-
-        // if (effectType === 'once') {
-        //     this.sendToDiscard(cardId, cardLocationString);
-        // }
 
         this.resolveField()
 

@@ -6,8 +6,19 @@ class NoveltyEffectService {
     }
 }
 
+interface NoveltyEffect {
+    id: string;
+    name: string;
+    description: string;
+    effect: (requirements: any) => any;
+    requirements: any;
+    cleanupEffect?: (requirements: any) => any;
+}
 
-const noveltyEffectList: any = {
+
+const noveltyEffectList: {
+    [key: string]: NoveltyEffect
+} = {
     doNothing: {
         id: 'doNothing',
         name: 'Do Nothing',
@@ -48,11 +59,10 @@ const noveltyEffectList: any = {
         id: 'modifySentientStats',
         name: 'Modify Sentient Stats',
         description: `Modify a sentient's stats`,
-        effect: (requirements: { target: Sentient, amount: any, cardId: string }) => {
+        effect: (requirements: { target: Sentient, amount: any }) => {
             const {
                 target,
                 amount,
-                // cardId,
             } = requirements;
             const {
                 attack,
@@ -89,10 +99,9 @@ const noveltyEffectList: any = {
                 source: 'effectArgs.amount'
             },
         },
-        cleanupEffect: (requirements: { target: Sentient, cardId: string, amount: any }) => {
+        cleanupEffect: (requirements: { target: Sentient, amount: any }) => {
             const {
                 target,
-                // cardId,
                 amount,
             } = requirements;
             const {
