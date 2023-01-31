@@ -20,6 +20,9 @@ export const generatePlayer = (options: {
             occupants: [],
             connections: [],
             level: 0,
+            effectId: 'doNothing',
+            effectType: 'once',
+            effectArgs: {},
         },
         dungeon: [],
         garrison: {
@@ -30,6 +33,9 @@ export const generatePlayer = (options: {
             occupants: [],
             connections: [],
             level: 0,
+            effectId: 'doNothing',
+            effectType: 'once',
+            effectArgs: {},
         },
         discard: [],
         resources: {

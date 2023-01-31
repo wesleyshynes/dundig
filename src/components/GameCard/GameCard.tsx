@@ -52,6 +52,12 @@ export default function GameCard(props: {
                 </div>
             )}
 
+            {cardInfo.type === 'ground' && (
+                <div className="ground-stats">
+                    {cardInfo.effectId} <br />
+                </div>
+            )}
+
             <br />
 
             {cardInfo.type === 'ground' && (

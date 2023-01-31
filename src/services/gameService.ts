@@ -28,6 +28,9 @@ class GameService {
         occupants: [],
         connections: [],
         level: 0,
+        effectId: 'doNothing',
+        effectType: 'once',
+        effectArgs: {},
     };
     cardRef: { [v: string]: Ground | Sentient | Novelty } = {
         commonGround: this.commonGround,
@@ -543,7 +546,7 @@ class GameService {
         } = card;
 
         const effectDetails = noveltyEffectService.getEffectDetails(effectId);
-        if(!effectDetails) {
+        if (!effectDetails) {
             this.addLogMessage(`No effect found for ${cardId}`);
             this.renderFn();
             return

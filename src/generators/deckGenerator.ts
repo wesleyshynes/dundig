@@ -7,6 +7,35 @@ export const generateDeck = (options: { playerName: string, playerId: string }):
     const deck: Array<Ground | Sentient | Novelty> = [];
     // generate deck
     for (let i = 0; i < 10; i++) {
+
+        const genEffect: {
+            effectId: string,
+            effectType: 'once' | 'continuous',
+            effectArgs: any,
+        }[] = [
+                {
+                    effectId: 'doNothing',
+                    effectType: 'once',
+                    effectArgs: {},
+                },
+                {
+                    effectId: 'modifySentientStats',
+                    effectType: 'continuous',
+                    effectArgs: {
+                        friendlyAmount: {
+                            attack: 0,
+                            health: 0,
+                            speed: 0,
+                        },
+                        enemyAmount: {
+                            attack: -1,
+                            health: 0,
+                            speed: -1,
+                        },
+                    }
+                }
+            ]
+
         const ground: Ground = {
             id: `${playerId}ground${i}`,
             owner: playerName,
@@ -15,6 +44,7 @@ export const generateDeck = (options: { playerName: string, playerId: string }):
             occupants: [],
             connections: [],
             level: Math.round(Math.random() * 3),
+            ...genEffect[Math.round(Math.random() * 1)],
         };
         deck.push(ground);
     }
@@ -26,30 +56,30 @@ export const generateDeck = (options: { playerName: string, playerId: string }):
             effectType: 'once' | 'continuous',
             effectArgs: any,
         }[] = [
-            {
-                effectId: 'doNothing',
-                effectType: 'once',
-                effectArgs: {},
-            },
-            {
-                effectId: 'dealDamagetoTargetSentient',
-                effectType: 'once',
-                effectArgs: {
-                    amount: 1,
+                {
+                    effectId: 'doNothing',
+                    effectType: 'once',
+                    effectArgs: {},
                 },
-            },
-            {
-                effectId: 'modifySentientStats',
-                effectType: 'continuous',
-                effectArgs: {
-                    amount: {
-                        attack: 10,
-                        health: 10,
-                        speed: 10,
+                {
+                    effectId: 'dealDamagetoTargetSentient',
+                    effectType: 'once',
+                    effectArgs: {
+                        amount: 1,
                     },
+                },
+                {
+                    effectId: 'modifySentientStats',
+                    effectType: 'continuous',
+                    effectArgs: {
+                        amount: {
+                            attack: 10,
+                            health: 10,
+                            speed: 10,
+                        },
+                    }
                 }
-            }
-        ]
+            ]
 
         const novelty: Novelty = {
             id: `${playerId}novelty${i}`,
@@ -61,7 +91,7 @@ export const generateDeck = (options: { playerName: string, playerId: string }):
                 ground: Math.round(Math.random() * 2),
             },
             level: Math.round(Math.random() * 7),
-            ...genEffect[Math.round(Math.random() *  2)],
+            ...genEffect[Math.round(Math.random() * 2)],
             // effectType: 'once',
             // effectId: 'doNothing',
             // effectArgs: {},
