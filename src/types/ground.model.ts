@@ -7,4 +7,5 @@ export interface Ground extends Card {
     effectType: 'once' | 'continuous' | 'onEnter';
     effectId: string;
     effectArgs: any;
+    effectedSentients: string[]
 }

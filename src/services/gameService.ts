@@ -1,3 +1,4 @@
+import { getEffectiveConstraintOfTypeParameter } from "typescript";
 import { generateDeck } from "../generators/deckGenerator";
 import { generatePlayer } from "../generators/playerGenerator";
 import { CardCost } from "../types/cost.model";
@@ -5,6 +6,7 @@ import { Ground } from "../types/ground.model";
 import { Novelty } from "../types/novelty.model";
 import { Player } from "../types/player.model";
 import { Sentient } from "../types/sentient.model";
+import groundEffectService from "./cardEffects/groundEffectService";
 import noveltyEffectService from "./cardEffects/noveltyEffectService";
 
 class GameService {
@@ -31,6 +33,7 @@ class GameService {
         effectId: 'doNothing',
         effectType: 'once',
         effectArgs: {},
+        effectedSentients: [],
     };
     cardRef: { [v: string]: Ground | Sentient | Novelty } = {
         commonGround: this.commonGround,
@@ -341,6 +344,12 @@ class GameService {
                 this.sendToDiscard(noveltyId, `cardRef.${cardId}.novelties`)
             }
         }
+        while (cardInfo.groundEffects.length > 0) {
+            const groundEffectId = cardInfo.groundEffects.pop()
+            if (groundEffectId) {
+                this.removeCardFromLocation(cardId, `cardRef.${groundEffectId}.effectedSentients`)
+            }
+        }
 
         cardInfo.health = cardInfo.originalStats.health
         cardInfo.attack = cardInfo.originalStats.attack
@@ -363,6 +372,30 @@ class GameService {
                 const occupantId = cardInfo.occupants.pop();
                 if (!occupantId) { continue; }
                 this.sendToDiscard(occupantId, `cardRef.${cardId}.occupants`);
+            }
+        }
+        if (cardInfo.effectedSentients) {
+            while (cardInfo.effectedSentients.length > 0) {
+                const effectedSentientId = cardInfo.effectedSentients.pop()
+                const { effectId, effectArgs } = cardInfo
+                const effectDetails = groundEffectService.getEffectDetails(effectId);
+                if (effectDetails && effectedSentientId) {
+                    const { cleanupEffect } = effectDetails
+                    if (cleanupEffect) {
+                        const effectResult = cleanupEffect({
+                            target: this.cardRef[effectedSentientId],
+                            groundInfo: cardInfo,
+                            ...effectArgs
+                        })
+                        if (effectResult) {
+                            console.log(cardId, 'effect removed from', effectedSentientId)
+                        }
+                    }
+                }
+
+                if (effectedSentientId) {
+                    this.removeCardFromLocation(cardId, `cardRef.${effectedSentientId}.groundEffects`)
+                }
             }
         }
     }
@@ -427,6 +460,10 @@ class GameService {
     }
 
     resolveGround(groundLocation: string) {
+
+        const groundId = groundLocation.split('.')[1]
+        const groundInfo = this.cardRef[groundId]
+
         const location = this.parseLocation(groundLocation);
         const teams: { [p: string]: string[] } = {}
         const nonAttackers: string[] = []
@@ -439,6 +476,47 @@ class GameService {
                 deadSentients.push(cardId)
                 return
             }
+
+            // handle ground effects
+            if (groundInfo && groundInfo.type === 'ground') {
+                const { effectId, effectArgs } = groundInfo
+                const effectDetails = groundEffectService.getEffectDetails(effectId);
+                const effectRequirements: any = {}
+                // let validRequirements = true;
+                const cardAffected = groundInfo.effectedSentients.indexOf(cardId) > -1
+                if (effectDetails && !cardAffected) {
+                    const { effect, requirements } = effectDetails;
+                    if (requirements) {
+                        // loop through requirement keys
+                        Object.keys(requirements).forEach((requirementKey: string) => {
+                            const requirement = requirements[requirementKey];
+                            const { type, source, location } = requirement;
+                            const splitSource = source.split('.');
+                            const sourceRoot = splitSource[0];
+                            if (sourceRoot === 'effectArgs') {
+                                const extraArgKey = splitSource[1];
+                                effectRequirements[requirementKey] = effectArgs[extraArgKey];
+                                return
+                            }
+                            if (sourceRoot === 'occupant') {
+                                effectRequirements[requirementKey] = card;
+                            }
+                            if (sourceRoot === 'groundInfo') {
+                                effectRequirements[requirementKey] = groundInfo;
+                            }
+                        })
+                    }
+
+                    const effectResult = effect(effectRequirements);
+                    if (effectResult && effectResult.success) {
+                        card.groundEffects.push(groundId)
+                        groundInfo.effectedSentients.push(cardId)
+                    }
+
+                }
+            }
+
+
             if (card.attack <= 0) {
                 nonAttackers.push(cardId)
                 return
@@ -521,6 +599,7 @@ class GameService {
         this.moveCardToLocation(cardId, cardLocationString, `cardRef.${locationId}.occupants`);
         this.deselectCard()
         this.deselectTarget()
+        this.resolveGround(`cardRef.${locationId}.occupants`)
         this.renderFn();
     }
 

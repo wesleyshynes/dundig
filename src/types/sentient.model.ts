@@ -18,4 +18,5 @@ export interface Sentient extends Card {
         speed: number;
     }
     novelties: string[];
+    groundEffects: string[];
 }

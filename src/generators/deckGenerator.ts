@@ -23,9 +23,9 @@ export const generateDeck = (options: { playerName: string, playerId: string }):
                     effectType: 'continuous',
                     effectArgs: {
                         friendlyAmount: {
-                            attack: 0,
+                            attack: 1,
                             health: 0,
-                            speed: 0,
+                            speed: 1,
                         },
                         enemyAmount: {
                             attack: -1,
@@ -43,6 +43,7 @@ export const generateDeck = (options: { playerName: string, playerId: string }):
             type: 'ground',
             occupants: [],
             connections: [],
+            effectedSentients: [],
             level: Math.round(Math.random() * 3),
             ...genEffect[Math.round(Math.random() * 1)],
         };
@@ -123,6 +124,7 @@ export const generateDeck = (options: { playerName: string, playerId: string }):
                 speed: 0,
             },
             novelties: [],
+            groundEffects: [],
         };
         deck.push(sentient);
     }

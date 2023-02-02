@@ -23,6 +23,7 @@ export const generatePlayer = (options: {
             effectId: 'doNothing',
             effectType: 'once',
             effectArgs: {},
+            effectedSentients: [],
         },
         dungeon: [],
         garrison: {
@@ -36,6 +37,7 @@ export const generatePlayer = (options: {
             effectId: 'doNothing',
             effectType: 'once',
             effectArgs: {},
+            effectedSentients: [],
         },
         discard: [],
         resources: {

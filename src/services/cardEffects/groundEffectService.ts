@@ -88,8 +88,7 @@ const groundEffectList: {
         requirements: {
             target: {
                 type: 'sentient',
-                source: 'selectedTarget',
-                location: 'field',
+                source: 'occupant',
             },
             friendlyAmount: {
                 type: 'object',
