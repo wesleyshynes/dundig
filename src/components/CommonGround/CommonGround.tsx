@@ -1,9 +1,10 @@
+import { TARGET_BUTTON } from "../../common/buttonFunctions";
 import gameService from "../../services/gameService";
 import { Ground } from "../../types/ground.model";
 import GameCard from "../GameCard/GameCard";
 import './commonGround.scss'
 
-export default function CommonGround(props: {}) {
+export default function CommonGround() {
 
    const commonGround: Ground = gameService.commonGround;
 
@@ -13,7 +14,9 @@ export default function CommonGround(props: {}) {
             <GameCard
                 cardId={commonGround.id}
                 location={`commonGround`}
-                buttons={[]}
+                buttons={[
+                    TARGET_BUTTON,
+                ]}
             />
         </div>
     )

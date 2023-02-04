@@ -27,7 +27,13 @@ export default function SelectedCard() {
         const targetInfo = gameService.cardRef[selectedTarget.id];
         const splitTarget = selectedTarget.location.split('.');
         const targetLocation = splitTarget.pop();
-        if (targetInfo && canPayCost && targetInfo.type === 'ground' && targetLocation !== 'discard') {
+        if (
+            targetInfo &&
+            canPayCost &&
+            targetInfo.type === 'ground' &&
+            targetLocation !== 'discard' &&
+            targetInfo.owner === activePlayer
+        ) {
             // TODO: add button to play at target
             cardButtons.push({
                 label: 'play',

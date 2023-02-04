@@ -86,6 +86,12 @@ class GameService {
         this.renderFn();
     }
 
+    endGame(winner: string) {
+        this.gameState = 'ended';
+        this.addLogMessage(`GAME OVER ${winner} won the game`);
+        this.renderFn();
+    }
+
     drawCard(drawCardOptions: { playerId: string }) {
         const { playerId } = drawCardOptions;
         const player = this.players[playerId];
@@ -96,8 +102,10 @@ class GameService {
             }
             this.addLogMessage(`${playerId} drew a card`);
         } else {
-            this.gameState = 'ended';
-            this.addLogMessage(`GAME OVER ${playerId} tried to draw a card but has no cards left in their deck`);
+            // this.gameState = 'ended';
+            // this.addLogMessage(`GAME OVER ${playerId} tried to draw a card but has no cards left in their deck`);
+            const opponent = Object.keys(this.players).find(p => p !== playerId);
+            this.endGame(opponent || '');
         }
         this.renderFn()
     }
@@ -128,6 +136,18 @@ class GameService {
             player.garrison.occupants.forEach((o: string) => this.handleEndOfTurnCard(o))
             player.entrance.occupants.forEach((o: string) => this.handleEndOfTurnCard(o))
         })
+
+        // check for any opposing sentients in your garrison with an attack greater than 0
+        // if so, you lose
+        const opposingSentients = this.players[this.playerTurn].garrison.occupants.filter((o: string) => {
+            const cardInfo = this.cardRef[o];
+            return cardInfo.type === 'sentient' && cardInfo.owner !== this.playerTurn && cardInfo.attack > 0;
+        })
+        if (opposingSentients.length > 0) {
+            // this.gameState = 'ended';
+            // this.addLogMessage(`GAME OVER ${this.playerTurn} lost because they had opposing sentients in their garrison`);
+            this.endGame(nextTurnPlayer || '');
+        }
 
         if (nextTurnPlayer) {
             this.playerTurn = nextTurnPlayer;

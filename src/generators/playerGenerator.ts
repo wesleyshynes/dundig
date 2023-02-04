@@ -14,7 +14,7 @@ export const generatePlayer = (options: {
         hand: [],
         entrance: {
             id: `${playerId}entrance`,
-            owner: playerName,
+            owner: playerId,
             name: `${playerName}'s Entrance`,
             type: 'ground',
             occupants: [],
@@ -28,7 +28,7 @@ export const generatePlayer = (options: {
         dungeon: [],
         garrison: {
             id: `${playerId}garrison`,
-            owner: playerName,
+            owner: playerId,
             name: `${playerName}'s Garrison`,
             type: 'ground',
             occupants: [],
