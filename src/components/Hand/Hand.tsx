@@ -1,6 +1,6 @@
 import { SELECT_CARD_BUTTON } from "../../common/buttonFunctions";
 import gameService from "../../services/gameService";
-import GameCard from "../GameCard/GameCard";
+import GameCard, { CardButtonEntry } from "../GameCard/GameCard";
 import './hand.scss'
 
 export default function Hand(props: {
@@ -29,7 +29,7 @@ export default function Hand(props: {
             <div className="player-hand-cards">
                 {hand?.map((cardId, idx) => {
                     const cardInfo = gameService.cardRef[cardId];
-                    const cardButtons = [
+                    const cardButtons: CardButtonEntry[] = [
                         SELECT_CARD_BUTTON,
                         {
                             clickFn: payHandCard,
@@ -39,7 +39,8 @@ export default function Hand(props: {
                     if (cardInfo.type === 'ground') {
                         cardButtons.push({
                             clickFn: playGroundCard,
-                            label: 'play ground'
+                            label: 'play ground',
+                            disable: cardInfo.level > gameService.players[playerId].dungeon.length + 1
                         })
                     }
                     return myHand ? (

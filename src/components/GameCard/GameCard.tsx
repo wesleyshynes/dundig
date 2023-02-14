@@ -2,7 +2,7 @@ import gameService from "../../services/gameService";
 import Occupant from "../Occupant/Occupant";
 import './gameCard.scss'
 
-interface CardButtonEntry {
+export interface CardButtonEntry {
     clickFn: (o: { cardId: string, location: string }) => void,
     label: string,
     disable?: boolean
@@ -32,7 +32,7 @@ export default function GameCard(props: {
 
     return (
         <div className="game-card">
-            {cardInfo.name} <br />
+           LVL: {cardInfo.level} {cardInfo.name} <br />
             {cardInfo.type} <br />
 
             {cardInfo.type !== 'ground' && cardInfo.cost && (
