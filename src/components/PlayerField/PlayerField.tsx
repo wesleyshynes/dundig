@@ -19,31 +19,33 @@ export default function PlayerField(props: {
                 <PlayerInfo playerId={playerId} />
             </div>
 
-            <div className="player-deck">
-                <Deck playerId={playerId} />
-            </div>
-
             <div className="player-hand">
                 <Hand playerId={playerId} />
             </div>
 
-            <div className="player-entrance">
-                <Entrance playerId={playerId} />
+            <div className="player-deck-discard-garrison">
+                <div className="player-deck-discard">
+                    <div className="player-deck">
+                        <Deck playerId={playerId} />
+                    </div>
+                    <div className="player-discard">
+                        <Discard playerId={playerId} />
+                    </div>
+                </div>
+                <div className="player-garrison">
+                    <Garrison playerId={playerId} />
+                </div>
             </div>
 
             <div className="player-dungeon">
                 <Dungeon playerId={playerId} />
             </div>
 
-            <div className="player-garrison">
-                <Garrison playerId={playerId} />
-            </div>
-
-            <div className="player-discard">
-                <Discard playerId={playerId} />
-            </div>
+            <div className="player-entrance">
+                <Entrance playerId={playerId} />
+            </div>            
+            
         </div>
-
     )
 
 }
