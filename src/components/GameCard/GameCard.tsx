@@ -43,6 +43,12 @@ export default function GameCard(props: {
                 </div>
             )}
 
+            {cardInfo.type === 'ground' && (
+                <div className="card-cost">
+                    - <br />
+                </div>
+            )}
+
             <img src={`${cardInfo.image}`} alt={cardInfo.name} /> <br />
 
             {cardInfo.type === 'sentient' && (
@@ -65,6 +71,17 @@ export default function GameCard(props: {
 
             <br />
 
+            <div className="card-buttons">
+                {props.buttons.map((button, idx) => (
+                    <button
+                        key={idx}
+                        disabled={button.disable}
+                        onClick={() => button.clickFn({ cardId, location })}>
+                        {button.label}
+                    </button>
+                ))}
+            </div>
+
             {cardInfo.type === 'ground' && (
                 <div className="ground-occupants">
                     OCCUPANTS: <br />
@@ -86,16 +103,9 @@ export default function GameCard(props: {
                 </div>
             )}
 
-            <div className="card-buttons">
-                {props.buttons.map((button, idx) => (
-                    <button
-                        key={idx}
-                        disabled={button.disable}
-                        onClick={() => button.clickFn({ cardId, location })}>
-                        {button.label}
-                    </button>
-                ))}
-            </div>
+
+
+
         </div>
     )
 

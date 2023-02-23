@@ -21,10 +21,10 @@ export default function Dungeon(props: {
 
     const playSentientInGround = (o: { cardId: string, location: string }) => {
         const {
-            // cardId, 
-            location,
+            cardId, 
+            // location,
         } = o;
-        gameService.playSentientInGround(playerId, selectedCard.id, selectedCard.location, location)
+        gameService.playSentientInGround(playerId, selectedCard.id, selectedCard.location, cardId)
     }
 
     return (
@@ -69,9 +69,7 @@ export default function Dungeon(props: {
                             // TODO: add button to play at target
                             dungeonButtons.push({
                                 label: 'play',
-                                clickFn: () => {
-                                    playSentientInGround({ cardId, location: groundsInfo.id })
-                                }
+                                clickFn: playSentientInGround
                             })
                         }
                     }
