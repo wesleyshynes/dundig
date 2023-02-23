@@ -1,4 +1,5 @@
 import { Player } from "../types/player.model";
+import { imageUrlGenerator } from "./deckGenerator";
 
 export const generatePlayer = (options: {
     playerName: string,
@@ -14,6 +15,7 @@ export const generatePlayer = (options: {
         hand: [],
         entrance: {
             id: `${playerId}entrance`,
+            image: imageUrlGenerator(),
             owner: playerId,
             name: `${playerName}'s Entrance`,
             type: 'ground',
@@ -28,6 +30,7 @@ export const generatePlayer = (options: {
         dungeon: [],
         garrison: {
             id: `${playerId}garrison`,
+            image: imageUrlGenerator(),
             owner: playerId,
             name: `${playerName}'s Garrison`,
             type: 'ground',

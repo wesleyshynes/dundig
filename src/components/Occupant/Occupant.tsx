@@ -1,5 +1,6 @@
 import gameService from "../../services/gameService";
 // import { Sentient } from "../../types/sentient.model";
+import './occupant.scss'
 
 export default function Occupant(props: {
     occupantId: string,
@@ -151,6 +152,7 @@ export default function Occupant(props: {
     return (
         <div className="occupant">
             {occupantId} <br />
+            <img src={`${occupantInfo.image}`} /> <br />
             A:{attack}  / H:{health} / S:{speed} <br />
             {buttons.map((btn, jdx) => (
                 <button

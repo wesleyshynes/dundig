@@ -1,4 +1,25 @@
 .game-card {
     padding: 5px;
     border: 1px solid #ccc;
+    img {
+        max-width: 100%;
+    }
+
+    &.ground {
+        border: 2px dashed #eee;
+    }
+
+    &.novelty {
+        border: 2px solid #aaa;
+    }
+
+    &.sentient {
+        border: 2px solid #000;
+    }
+
+    .ground-occupants-list-wrapper {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-gap: 5px;
+    }
 }

@@ -1,4 +1,4 @@
-import { generateDeck } from "../generators/deckGenerator";
+import { generateDeck, imageUrlGenerator } from "../generators/deckGenerator";
 import { generatePlayer } from "../generators/playerGenerator";
 import { CardCost } from "../types/cost.model";
 import { Ground } from "../types/ground.model";
@@ -23,6 +23,7 @@ class GameService {
 
     commonGround: Ground = {
         id: 'commonGround',
+        image: imageUrlGenerator(),
         owner: '',
         name: 'Common Ground',
         type: 'ground',

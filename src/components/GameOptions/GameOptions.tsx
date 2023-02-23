@@ -1,4 +1,5 @@
 import gameService from "../../services/gameService";
+import './gameOptions.scss'
 
 export default function GameOptions() {
     const { activePlayer } = gameService;

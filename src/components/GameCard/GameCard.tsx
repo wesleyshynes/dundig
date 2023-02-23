@@ -14,10 +14,10 @@ export default function GameCard(props: {
     buttons: CardButtonEntry[]
 }) {
 
-    // const { activePlayer } = gameService;
+    const { selectedCard } = gameService;
 
     const { cardId, location } = props;
-    const cardInfo = gameService.cardRef[props.cardId];
+    const cardInfo = gameService.cardRef[cardId];
 
     if (!cardInfo) {
         return (
@@ -27,19 +27,24 @@ export default function GameCard(props: {
         )
     }
 
+    const isCardSelected = selectedCard.id === cardId;
+
     // const cardLocation = location.split('.');
     // const cardLocationType = cardLocation[cardLocation.length - 1];
 
     return (
-        <div className="game-card">
-           LVL: {cardInfo.level} {cardInfo.name} <br />
-            {cardInfo.type} <br />
+        <div className={`game-card ${cardInfo.type}`}>
+            LVL: {cardInfo.level} {cardInfo.name} <br />
+            {cardInfo.type} {isCardSelected ? 'X' : ''} <br />
 
             {cardInfo.type !== 'ground' && cardInfo.cost && (
                 <div className="card-cost">
                     H: {cardInfo.cost.hand} / G: {cardInfo.cost.ground} <br />
                 </div>
             )}
+
+            <img src={`${cardInfo.image}`} alt={cardInfo.name} /> <br />
+
             {cardInfo.type === 'sentient' && (
                 <div className="sentient-stats">
                     A: {cardInfo.attack} / H: {cardInfo.health} / S: {cardInfo.speed} <br />
@@ -63,18 +68,20 @@ export default function GameCard(props: {
             {cardInfo.type === 'ground' && (
                 <div className="ground-occupants">
                     OCCUPANTS: <br />
-                    {cardInfo.occupants.map((occupant, idx) => {
-                        return (
-                            <Occupant
-                                key={idx}
-                                occupantId={occupant}
-                                occupantLocation={`cardRef.${cardId}.occupants`}
-                                location={location}
-                                locationId={cardId}
-                            />
-                        )
-                    }
-                    )}
+                    <div className="ground-occupants-list-wrapper">
+                        {cardInfo.occupants.map((occupant, idx) => {
+                            return (
+                                <Occupant
+                                    key={idx}
+                                    occupantId={occupant}
+                                    occupantLocation={`cardRef.${cardId}.occupants`}
+                                    location={location}
+                                    locationId={cardId}
+                                />
+                            )
+                        }
+                        )}
+                    </div>
                     <br />
                 </div>
             )}

@@ -4,4 +4,5 @@ export interface Card {
     owner: string;
     level: number;
     type: 'ground' | 'sentient' | 'novelty';
+    image: string;
 }

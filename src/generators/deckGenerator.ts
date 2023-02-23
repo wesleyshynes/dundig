@@ -2,6 +2,10 @@ import { Ground } from "../types/ground.model";
 import { Novelty } from "../types/novelty.model";
 import { Sentient } from "../types/sentient.model";
 
+export const imageUrlGenerator = () => {
+    return `https://picsum.photos/300/200?random=${Math.round(Math.random() * 1000)}`
+}
+
 export const generateDeck = (options: { playerName: string, playerId: string }): Array<Ground | Sentient | Novelty> => {
     const { playerName, playerId } = options;
     const deck: Array<Ground | Sentient | Novelty> = [];
@@ -38,6 +42,7 @@ export const generateDeck = (options: { playerName: string, playerId: string }):
 
         const ground: Ground = {
             id: `${playerId}ground${i}`,
+            image: imageUrlGenerator(),
             owner: playerName,
             name: `${playerName}'s Ground ${i}`,
             type: 'ground',
@@ -84,6 +89,7 @@ export const generateDeck = (options: { playerName: string, playerId: string }):
 
         const novelty: Novelty = {
             id: `${playerId}novelty${i}`,
+            image: imageUrlGenerator(),
             owner: playerName,
             name: `${playerName}'s Novelty ${i}`,
             type: 'novelty',
@@ -108,6 +114,7 @@ export const generateDeck = (options: { playerName: string, playerId: string }):
         }
         const sentient: Sentient = {
             id: `${playerId}sentient${i}`,
+            image: imageUrlGenerator(),
             owner: playerName,
             name: `${playerName}'s Sentient ${i}`,
             type: 'sentient',

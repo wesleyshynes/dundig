@@ -11,9 +11,20 @@ export default function Dungeon(props: {
     const { activePlayer } = gameService;
     const myDungeon = playerId === activePlayer;
 
+    const { selectedCard } = gameService;
+    const selectedCardInfo = gameService.cardRef[selectedCard.id];
+
     const payGroundCard = (o: { cardId: string, location: string }) => {
         const { cardId, location } = o;
         gameService.payGroundCard(playerId, cardId, location)
+    }
+
+    const playSentientInGround = (o: { cardId: string, location: string }) => {
+        const {
+            // cardId, 
+            location,
+        } = o;
+        gameService.playSentientInGround(playerId, selectedCard.id, selectedCard.location, location)
     }
 
     return (
@@ -30,6 +41,7 @@ export default function Dungeon(props: {
 
             <div className="dungeon-grounds">
                 {playerDungeon.map((cardId, index) => {
+                    const groundLocation = `players.${playerId}.dungeon`
                     const dungeonButtons: any[] = [
                         TARGET_BUTTON,
                     ]
@@ -41,11 +53,35 @@ export default function Dungeon(props: {
                             disable: groundsInfo.occupants.length > 0
                         })
                     }
+
+                    if (selectedCardInfo && selectedCardInfo.type === 'sentient') {
+                        const canPayCost = gameService.canPayCost(activePlayer, selectedCardInfo.cost);
+                        const targetInfo = groundsInfo
+                        const splitTarget = groundLocation.split('.');
+                        const targetLocation = splitTarget.pop();
+                        if (
+                            targetInfo &&
+                            canPayCost &&
+                            targetInfo.type === 'ground' &&
+                            targetLocation !== 'discard' &&
+                            targetInfo.owner === activePlayer
+                        ) {
+                            // TODO: add button to play at target
+                            dungeonButtons.push({
+                                label: 'play',
+                                clickFn: () => {
+                                    playSentientInGround({ cardId, location: groundsInfo.id })
+                                }
+                            })
+                        }
+                    }
+
+
                     return (
                         <div key={index} className="dungeon-card">
                             <GameCard
                                 cardId={cardId}
-                                location={`players.${playerId}.dungeon`}
+                                location={groundLocation}
                                 buttons={dungeonButtons}
                             />
                         </div>
