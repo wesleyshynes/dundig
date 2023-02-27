@@ -49,7 +49,11 @@ export default function GameCard(props: {
                 </div>
             )}
 
-            <img src={`${cardInfo.image}`} alt={cardInfo.name} /> <br />
+            <div className="img-wrapper-container">
+                <div className="img-wrapper">
+                    <img src={`${cardInfo.image}`} alt={cardInfo.name} /> <br />
+                </div>
+            </div>
 
             {cardInfo.type === 'sentient' && (
                 <div className="sentient-stats">

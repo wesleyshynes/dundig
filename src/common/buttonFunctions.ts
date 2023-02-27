@@ -4,9 +4,18 @@ const targetFunction = (o: { cardId: string, location: string }) => {
     gameService.selectTarget(o);
 }
 
+const untargetFunction = (o: { cardId: string, location: string }) => {
+    gameService.deselectTarget();
+}
+
 export const TARGET_BUTTON = {
     label: 'target',
     clickFn: targetFunction
+}
+
+export const UNTARGET_BUTTON = {
+    label: 'untarget',
+    clickFn: untargetFunction
 }
 
 const selectCardFunction = (o: { cardId: string, location: string }) => {
