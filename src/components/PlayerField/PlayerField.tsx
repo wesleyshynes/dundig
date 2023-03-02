@@ -15,36 +15,40 @@ export default function PlayerField(props: {
     return (
         <div className="player-field">
 
+
+            <div className="split-card-slider-section flex-center">
+                <div className="inner-wrapper hold-wrapper flex-center">
+                    <div className="tiny-card">
+                        <Discard playerId={playerId} />
+                    </div>
+                </div>
+                <div className="inner-wrapper card-slide-wrapper flex-center">
+                    <PlayerInfo playerId={playerId} />
+                    <Garrison playerId={playerId} />
+                </div>
+            </div>
+
+            <div className="split-card-slider-section flex-center">
+                <div className="inner-wrapper hold-wrapper flex-center">
+                    <div className="tiny-card">
+                        <Deck playerId={playerId} />
+                    </div>
+                </div>
+                <div className="inner-wrapper card-slide-wrapper flex-center">
+                    <Entrance playerId={playerId} />
+                    <Dungeon playerId={playerId} />
+                </div>
+            </div>
+
             <div className="player-info">
-                <PlayerInfo playerId={playerId} />
+
             </div>
 
             <div className="player-hand">
                 <Hand playerId={playerId} />
             </div>
 
-            <div className="player-deck-discard-garrison">
-                <div className="player-deck-discard">
-                    <div className="player-deck">
-                        <Deck playerId={playerId} />
-                    </div>
-                    <div className="player-discard">
-                        <Discard playerId={playerId} />
-                    </div>
-                </div>
-                <div className="player-garrison">
-                    <Garrison playerId={playerId} />
-                </div>
-            </div>
 
-            <div className="player-dungeon">
-                <Dungeon playerId={playerId} />
-            </div>
-
-            <div className="player-entrance">
-                <Entrance playerId={playerId} />
-            </div>            
-            
         </div>
     )
 

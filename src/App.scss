@@ -49,5 +49,18 @@ input{
 
 
 .App {
-    padding: 1em;
+    padding: 150px 40px;
+}
+
+// UTILITY CLASSES
+
+.flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-content: center;
+}
+
+.text-center {
+    text-align: center;
 }

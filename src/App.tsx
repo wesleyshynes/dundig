@@ -7,6 +7,7 @@ import SelectedCard from './components/SelectedCard/SelectedCard';
 import GameLog from './components/GameLog/GameLog';
 import GameOptions from './components/GameOptions/GameOptions';
 import SelectedTarget from './components/SelectedTarget/SelectedTarget';
+import ActivePlayerBar from './components/ActivePlayerBar/ActivePlayerBar';
 
 function App() {
 
@@ -41,6 +42,13 @@ function App() {
 
   return (
     <div className="App">
+
+      <ActivePlayerBar />
+
+      
+
+      <hr /><hr /><hr />
+
       <div className="render-count">
         R: {renderCount}
       </div>

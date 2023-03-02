@@ -1,6 +1,7 @@
 import { TARGET_BUTTON } from "../../common/buttonFunctions";
 import gameService from "../../services/gameService";
 import GameCard from "../GameCard/GameCard";
+import "./entrance.scss";
 
 export default function Entrance(props: {
     playerId: string,
