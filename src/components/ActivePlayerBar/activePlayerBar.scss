@@ -16,7 +16,11 @@
             width: 80px;
             height: 80px;
             background: grey;
-            text-align: center;            
+            text-align: center;
+            cursor: pointer;
+            &:hover {
+                background: #333;
+            }         
         }
     }
 }

@@ -3,7 +3,7 @@ import Discard from "../Discard/Discard";
 import Dungeon from "../Dungeon/Dungeon";
 import Entrance from "../Entrance/Entrance";
 import Garrison from "../Garrison/Garrison";
-import Hand from "../Hand/Hand";
+// import Hand from "../Hand/Hand";
 import PlayerInfo from "../PlayerInfo/PlayerInfo";
 import './playerField.scss'
 
@@ -40,13 +40,9 @@ export default function PlayerField(props: {
                 </div>
             </div>
 
-            <div className="player-info">
-
-            </div>
-
-            <div className="player-hand">
+            {/* <div className="player-hand">
                 <Hand playerId={playerId} />
-            </div>
+            </div> */}
 
 
         </div>

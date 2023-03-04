@@ -57,9 +57,9 @@ function App() {
 
       <GameOptions />
 
-      <SelectedCard />
+      {/* <SelectedCard /> */}
 
-      <SelectedTarget />
+      {/* <SelectedTarget /> */}
 
       <PlayerField playerId={activePlayer} />
 
