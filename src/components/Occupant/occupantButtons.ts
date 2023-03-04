@@ -46,7 +46,8 @@ export const generateOccupantButtons = (options: {
         const moveBack = locationSpot === 0 ? `players.${locationOwner}.entrance.occupants` :
             `cardRef.${locationRef[locationSpot - 1]}.occupants`
         isOccupantOwner && buttons.push({
-            label: '<-',
+            // label: '<-',
+            label: '⬅️',
             clickFn: () => {
                 moveTo(moveBack)
             },
@@ -56,7 +57,8 @@ export const generateOccupantButtons = (options: {
         const moveForward = locationSpot === locationRef.length - 1 ? `players.${locationOwner}.garrison.occupants` :
             `cardRef.${locationRef[locationSpot + 1]}.occupants`
         isOccupantOwner && buttons.push({
-            label: '->',
+            // label: '->',
+            label: '➡️',
             clickFn: () => {
                 moveTo(moveForward)
             },
@@ -72,14 +74,16 @@ export const generateOccupantButtons = (options: {
         const moveBackward = locationOwnerDungeon.length > 0 ? `cardRef.${locationOwnerDungeon[locationOwnerDungeon.length - 1]}.occupants` :
             moveEntrance
         isOccupantOwner && buttons.push({
-            label: '<-',
+            // label: '<-',
+            label: '⬅️',
             clickFn: () => {
                 moveTo(moveBackward)
             },
             disabled: speed <= 0
         })
         isOccupantOwner && buttons.push({
-            label: 'entrance',
+            // label: 'entrance',
+            label: '🚪',
             clickFn: () => {
                 moveTo(moveEntrance)
             },
@@ -94,7 +98,8 @@ export const generateOccupantButtons = (options: {
         const moveIn = locationOwnerDungeon.length > 0 ? `cardRef.${locationOwnerDungeon[0]}.occupants` :
             `players.${locationOwner}.garrison.occupants`
         isOccupantOwner && buttons.push({
-            label: '->',
+            // label: '->',
+            label: '➡️',
             clickFn: () => {
                 moveTo(moveIn)
             },
@@ -102,7 +107,8 @@ export const generateOccupantButtons = (options: {
         })
         const moveToCommonGround = `cardRef.commonGround.occupants`
         isOccupantOwner && buttons.push({
-            label: 'common',
+            // label: 'common',
+            label: '🌎',
             clickFn: () => {
                 moveTo(moveToCommonGround)
             },
@@ -114,7 +120,8 @@ export const generateOccupantButtons = (options: {
     if (cardLocationType === 'commonGround') {
         const moveToMyEntrance = `players.${activePlayer}.entrance.occupants`
         isOccupantOwner && buttons.push({
-            label: 'my entrance',
+            // label: 'my entrance',
+            label: '🚪',
             clickFn: () => {
                 moveTo(moveToMyEntrance)
             },
@@ -124,7 +131,8 @@ export const generateOccupantButtons = (options: {
         if (opponentName) {
             const moveToOpponentEntrance = `players.${opponentName}.entrance.occupants`
             isOccupantOwner && buttons.push({
-                label: `${opponentName}'s entrance`,
+                // label: `${opponentName}'s entrance`,
+                label: '💀',
                 clickFn: () => {
                     moveTo(moveToOpponentEntrance)
                 },
@@ -136,13 +144,15 @@ export const generateOccupantButtons = (options: {
     // default buttons
     buttons.push(
         {
-            label: 'select',
+            // label: 'select',
+            label: '👆',
             clickFn: () => {
                 gameService.selectCard({ cardId: occupantId, location: occupantLocation })
             }
         },
         {
-            label: 'target',
+            // label: 'target',
+            label: '🎯',
             clickFn: () => {
                 gameService.selectTarget({ cardId: occupantId, location: occupantLocation })
             }

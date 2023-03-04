@@ -43,6 +43,14 @@ export default function SmallGameCard(props: {
                     <img src={`${cardInfo.image}`} alt={cardInfo.name} /> <br />
                 </div>
             </div>
+
+            {cardInfo.type === 'sentient' && (
+                <div className="sentient-stats">
+                    A: {cardInfo.attack} / H: {cardInfo.health} / S: {cardInfo.speed} <br />
+                </div>
+            )}
+
+
             <div className="card-buttons">
                 {props.buttons.map((button, idx) => (
                     <button
@@ -53,13 +61,25 @@ export default function SmallGameCard(props: {
                     </button>
                 ))}
             </div>
-
             {cardInfo.type === 'ground' && cardInfo.occupants.length > 0 && (
-                <div className="ground-occupannt">
-                    {cardInfo.occupants.length} occupants <br />
-                    <button
-                        onClick={() => setShowOccupants(true)}>
-                        View</button>
+                <div className="ground-occupant">
+
+                    <div className="occupant-display flex-center">
+                        {/* {cardInfo.occupants.length} occupants */}
+
+                        <div className="occupant-count flex-center">
+                            {cardInfo.occupants.map((o => {
+                                return (
+                                    '👤'
+                                )
+                            }))}
+                        </div>
+
+                        <button onClick={() => setShowOccupants(true)}>
+                            🔎
+                        </button>
+
+                    </div>
 
 
                     <CardModal

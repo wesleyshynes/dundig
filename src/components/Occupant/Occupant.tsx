@@ -1,4 +1,5 @@
 import gameService from "../../services/gameService";
+import SmallGameCard from "../SmallGameCard/SmallGameCard";
 // import { Sentient } from "../../types/sentient.model";
 import './occupant.scss'
 import { generateOccupantButtons } from "./occupantButtons";
@@ -22,7 +23,7 @@ export default function Occupant(props: {
         )
     }
 
-    const { attack, health, speed } = occupantInfo
+    // const { attack, health, speed } = occupantInfo
 
     const buttons = generateOccupantButtons({
         occupantInfo,
@@ -34,7 +35,15 @@ export default function Occupant(props: {
 
     return (
         <div className="occupant">
-            {occupantId} <br />
+
+            <SmallGameCard
+                cardId={occupantId}
+                location={occupantLocation}
+                buttons={buttons}
+            />
+
+
+            {/* {occupantId} <br />
             <img src={`${occupantInfo.image}`} /> <br />
             A:{attack}  / H:{health} / S:{speed} <br />
             {buttons.map((btn, jdx) => (
@@ -44,7 +53,7 @@ export default function Occupant(props: {
                     onClick={() => btn.clickFn()}>
                     {btn.label}
                 </button>
-            ))}
+            ))} */}
         </div>
     )
 }

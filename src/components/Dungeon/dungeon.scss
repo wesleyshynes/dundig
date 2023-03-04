@@ -3,7 +3,19 @@
 }
 
 .dungeon-grounds {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 250px));
-    grid-gap: 10px;
+    // display: grid;
+    // grid-template-columns: repeat(auto-fill, minmax(200px, 250px));
+    // grid-gap: 10px;
+    display: flex;
+    gap: 10px;
+
+    .empty-dungeon-card {
+        width: 150px;
+        height: 200px;
+        padding: 5px;
+        border: 2px solid #ccc;
+        background-color: #eee;
+        color: #ccc;
+
+    }
 }

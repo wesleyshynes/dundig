@@ -2,6 +2,10 @@
     width: 150px;
     height: 200px;
 
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+
     padding: 5px;
     border: 1px solid #ccc;
 
@@ -55,6 +59,13 @@
         gap: 5px;
     }
 
+    .ground-occupant {
+        margin-top: auto;
+        .occupant-display {
+            gap: 5px;
+        }
+    }
+
     &.ground {
         border: 2px dashed #eee;
     }
@@ -66,4 +77,9 @@
     &.sentient {
         border: 2px solid #000;
     }
+}
+
+.occupant-list {
+    display: flex;
+    gap: 10px;
 }
