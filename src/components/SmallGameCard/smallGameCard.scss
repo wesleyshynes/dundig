@@ -1,0 +1,69 @@
+.small-game-card {
+    width: 150px;
+    height: 200px;
+
+    padding: 5px;
+    border: 1px solid #ccc;
+
+    .top-info {
+        display: grid;
+        grid-template-columns: 20px auto;
+        grid-gap: 5px;
+        .card-level {
+            padding: 5px;
+        }
+        .card-name {
+            padding: 5px 0;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+    }
+
+    img {
+        max-width: 100%;
+    }
+
+    .img-wrapper-container {
+        max-width: 100%;
+        .img-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 100%;
+            height: 0;
+            padding-bottom: 66%;
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #eee;
+            img {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                max-width: 100%;
+            }
+        }
+    }
+
+    .card-buttons {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        align-content: center;
+        gap: 5px;
+    }
+
+    &.ground {
+        border: 2px dashed #eee;
+    }
+
+    &.novelty {
+        border: 2px solid #aaa;
+    }
+
+    &.sentient {
+        border: 2px solid #000;
+    }
+}

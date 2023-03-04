@@ -3,10 +3,10 @@ import gameService from './services/gameService';
 import './App.scss';
 import PlayerField from './components/PlayerField/PlayerField';
 import CommonGround from './components/CommonGround/CommonGround';
-import SelectedCard from './components/SelectedCard/SelectedCard';
+// import SelectedCard from './components/SelectedCard/SelectedCard';
 import GameLog from './components/GameLog/GameLog';
 import GameOptions from './components/GameOptions/GameOptions';
-import SelectedTarget from './components/SelectedTarget/SelectedTarget';
+// import SelectedTarget from './components/SelectedTarget/SelectedTarget';
 import ActivePlayerBar from './components/ActivePlayerBar/ActivePlayerBar';
 
 function App() {
@@ -43,17 +43,15 @@ function App() {
   return (
     <div className="App">
 
-      <ActivePlayerBar />
-
-      
+      <ActivePlayerBar />      
 
       <hr /><hr /><hr />
 
-      <div className="render-count">
+      {/* <div className="render-count">
         R: {renderCount}
-      </div>
+      </div> */}
 
-      <GameLog />
+      <GameLog renderCount={renderCount}/>
 
       <GameOptions />
 

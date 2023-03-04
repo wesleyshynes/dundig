@@ -26,3 +26,9 @@ export const SELECT_CARD_BUTTON = {
     label: 'select',
     clickFn: selectCardFunction
 }
+
+// small buttons
+export const SMALL_TARGET_BUTTON = {
+    label: '🎯',
+    clickFn: targetFunction,
+}

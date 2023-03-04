@@ -1,6 +1,7 @@
-import { TARGET_BUTTON } from "../../common/buttonFunctions";
+import { SMALL_TARGET_BUTTON, TARGET_BUTTON } from "../../common/buttonFunctions";
 import gameService from "../../services/gameService";
 import GameCard from "../GameCard/GameCard";
+import SmallGameCard from "../SmallGameCard/SmallGameCard";
 import "./entrance.scss";
 
 export default function Entrance(props: {
@@ -12,10 +13,15 @@ export default function Entrance(props: {
     return (
         <div className="entrance">
             entrance: {playerEntrance.occupants.length}
-                <GameCard
+                {/* <GameCard
                     cardId={playerEntrance.id}
                     location={`players.${playerId}.entrance`}
                     buttons={[TARGET_BUTTON]}
+                /> */}
+                <SmallGameCard
+                    cardId={playerEntrance.id}
+                    location={`players.${playerId}.entrance`}
+                    buttons={[SMALL_TARGET_BUTTON]}
                 />
         </div>
     )
