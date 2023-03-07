@@ -39,7 +39,8 @@ export default function GameCard(props: {
 
             {cardInfo.type !== 'ground' && cardInfo.cost && (
                 <div className="card-cost">
-                    H: {cardInfo.cost.hand} / G: {cardInfo.cost.ground} <br />
+                    ✋: {cardInfo.cost.hand} / 🖼️: {cardInfo.cost.ground} <br />
+                    {/* H: {cardInfo.cost.hand} / G: {cardInfo.cost.ground} <br /> */}
                 </div>
             )}
 
@@ -57,7 +58,7 @@ export default function GameCard(props: {
 
             {cardInfo.type === 'sentient' && (
                 <div className="sentient-stats">
-                    A: {cardInfo.attack} / H: {cardInfo.health} / S: {cardInfo.speed} <br />
+                    {cardInfo.attack}⚔️ {cardInfo.health}🛡️ {cardInfo.speed}👟 <br />
                 </div>
             )}
 

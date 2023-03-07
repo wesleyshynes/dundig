@@ -45,8 +45,17 @@ export default function SmallGameCard(props: {
             </div>
 
             {cardInfo.type === 'sentient' && (
-                <div className="sentient-stats">
-                    A: {cardInfo.attack} / H: {cardInfo.health} / S: {cardInfo.speed} <br />
+                <div className="sentient-stats flex-center">
+                    <div className="attack-stat">
+                        {cardInfo.attack}⚔️
+                    </div>
+                    <div className="health-stat">
+                        {cardInfo.health}🛡️
+                    </div>
+                    <div className="speed-stat">
+                        {cardInfo.speed}👟
+                    </div>
+                    {/* {cardInfo.attack}⚔️ {cardInfo.health}🛡️ {cardInfo.speed}👟 <br /> */}
                 </div>
             )}
 

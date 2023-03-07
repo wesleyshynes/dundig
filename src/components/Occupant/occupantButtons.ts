@@ -51,7 +51,7 @@ export const generateOccupantButtons = (options: {
             clickFn: () => {
                 moveTo(moveBack)
             },
-            disabled: speed <= 0
+            disable: speed <= 0
         })
 
         const moveForward = locationSpot === locationRef.length - 1 ? `players.${locationOwner}.garrison.occupants` :
@@ -62,7 +62,7 @@ export const generateOccupantButtons = (options: {
             clickFn: () => {
                 moveTo(moveForward)
             },
-            disabled: speed <= 0
+            disable: speed <= 0
         })
     }
 
@@ -79,7 +79,7 @@ export const generateOccupantButtons = (options: {
             clickFn: () => {
                 moveTo(moveBackward)
             },
-            disabled: speed <= 0
+            disable: speed <= 0
         })
         isOccupantOwner && buttons.push({
             // label: 'entrance',
@@ -87,7 +87,7 @@ export const generateOccupantButtons = (options: {
             clickFn: () => {
                 moveTo(moveEntrance)
             },
-            disabled: speed <= 0
+            disable: speed <= 0
         })
     }
 
@@ -103,7 +103,7 @@ export const generateOccupantButtons = (options: {
             clickFn: () => {
                 moveTo(moveIn)
             },
-            disabled: speed <= 0
+            disable: speed <= 0
         })
         const moveToCommonGround = `cardRef.commonGround.occupants`
         isOccupantOwner && buttons.push({
@@ -112,7 +112,7 @@ export const generateOccupantButtons = (options: {
             clickFn: () => {
                 moveTo(moveToCommonGround)
             },
-            disabled: speed <= 0
+            disable: speed <= 0
         })
     }
 
@@ -125,7 +125,7 @@ export const generateOccupantButtons = (options: {
             clickFn: () => {
                 moveTo(moveToMyEntrance)
             },
-            disabled: speed <= 0
+            disable: speed <= 0
         })
         const opponentName = Object.keys(gameService.players).filter(player => player !== activePlayer)[0]
         if (opponentName) {
@@ -136,7 +136,7 @@ export const generateOccupantButtons = (options: {
                 clickFn: () => {
                     moveTo(moveToOpponentEntrance)
                 },
-                disabled: speed <= 0
+                disable: speed <= 0
             })
         }
     }
