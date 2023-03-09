@@ -1,4 +1,5 @@
 import gameService from "../../services/gameService";
+import FullGameCard from "../FullGameCard/FullGameCard";
 import GameCard from "../GameCard/GameCard";
 import './selectedCard.scss'
 
@@ -73,6 +74,13 @@ export default function SelectedCard() {
                 location={location}
                 buttons={cardButtons}
             />
+
+            <FullGameCard
+                cardId={id}
+                location={location}
+                buttons={cardButtons}
+            />
+
         </div>
     )
 }

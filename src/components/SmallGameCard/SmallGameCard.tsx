@@ -20,7 +20,7 @@ export default function SmallGameCard(props: {
 
     if (!cardInfo) {
         return (
-            <div className="game-card">
+            <div className="small-game-card">
                 No card info
             </div>
         )
