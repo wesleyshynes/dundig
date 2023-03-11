@@ -1,3 +1,6 @@
+import groundEffectService from "../../services/cardEffects/groundEffectService";
+import noveltyEffectService from "../../services/cardEffects/noveltyEffectService";
+import gameService from "../../services/gameService";
 import { CardButtonEntry } from "../GameCard/GameCard";
 import './fullGameCard.scss'
 
@@ -6,24 +9,75 @@ export default function FullGameCard(props: {
     location: string,
     buttons: CardButtonEntry[]
 }) {
+
+    const { selectedCard } = gameService;
+
+    const { cardId, location } = props;
+    const cardInfo = gameService.cardRef[cardId];
+
+    if (!cardInfo) {
+        return (
+            <div className="full-game-card">
+                No card info
+            </div>
+        )
+    }
+
+
+    const {
+        level,
+        name,
+        type,
+        image,
+        setId,
+        category,
+    } = cardInfo
+
+    const costArray: string[] = [];
+    if (type !== 'ground') {
+        for (let i = 0; i < cardInfo.cost.hand; i++) {
+            costArray.push('✋')
+        }
+        for (let i = 0; i < cardInfo.cost.ground; i++) {
+            costArray.push('🖼️')
+        }
+    }
+
+    let effectText: any = '';
+    if (type === 'novelty') {
+        const effectDetails = noveltyEffectService.getEffectDetails(cardInfo.effectId);
+        if (effectDetails) {
+            effectText = effectDetails.description;
+        }
+    }
+    if(type === 'ground' && cardInfo.effectId !== null) {
+        const effectDetails = groundEffectService.getEffectDetails(cardInfo.effectId);
+        if (effectDetails) {
+            effectText = effectDetails.description;
+        }
+    }
+
+
+    const isCardSelected = selectedCard.id === cardId;
+
     return (
         <div className="full-game-card">
             <div className="full-card-contents">
                 <div className="card-info">
                     <div className="level-box">
                         <div className="level-word">LEVEL</div>
-                        <div className="level-number">7</div>
+                        <div className="level-number">{level}</div>
                     </div>
 
                     <div className="card-name-box">
-                        <div className="card-name">Skip Master Nate</div>
+                        <div className="card-name">{name}</div>
                         <div className="card-type-cost">
                             <div className="card-type">
-                                Normie-Sentient
+                                {category}-{type}
                             </div>
+
                             <div className="card-cost">
-                                {/* hand emoji */}
-                                ✋✋🖼️🖼️
+                                {costArray.map((c, i) => <span key={i}>{c}</span>)}
                             </div>
                         </div>
                     </div>
@@ -31,7 +85,7 @@ export default function FullGameCard(props: {
                 <div className="card-image">
                     <div className="img-wrapper-container">
                         <div className="img-wrapper">
-                            <img src={`https://picsum.photos/300/200?random=34928739487`} /> <br />
+                            <img src={image} /> <br />
                         </div>
                     </div>
                 </div>
@@ -41,25 +95,29 @@ export default function FullGameCard(props: {
                         <div className="rarity">R</div>
                     </div>
                     <div className="effect-text">
-                        Nothing interesting here.
+                        {effectText}
                     </div>
                     <div className="flavor-text">
-                        If you are curious about the significance of his hairstyle; it makes him more aerodynamic when he fights.
+                        Flavor text  goes here to spice things up.
                     </div>
-                    <div className="card-stats flex-center">
-                        <div className="attack-stat">
-                            7⚔️
+
+                    {type === 'sentient' && (
+                        <div className="card-stats flex-center">
+                            <div className="attack-stat">
+                                {cardInfo.attack}⚔️
+                            </div>
+                            <div className="health-stat">
+                                {cardInfo.health}🛡️
+                            </div>
+                            <div className="speed-stat">
+                                {cardInfo.speed}👟
+                            </div>
                         </div>
-                        <div className="health-stat">
-                            7🛡️
-                        </div>
-                        <div className="speed-stat">
-                            7👟
-                        </div>
-                    </div>
+                    )}
+
                 </div>
                 <div className="card-id">
-                    ID: 123456789
+                    ID: {setId}
                 </div>
 
             </div>

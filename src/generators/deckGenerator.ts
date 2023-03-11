@@ -42,10 +42,12 @@ export const generateDeck = (options: { playerName: string, playerId: string }):
 
         const ground: Ground = {
             id: `${playerId}ground${i}`,
+            setId: Date.now() + '',
             image: imageUrlGenerator(),
             owner: playerName,
             name: `${playerName}'s Ground ${i}`,
             type: 'ground',
+            category: 'castle',
             occupants: [],
             connections: [],
             effectedSentients: [],
@@ -89,10 +91,12 @@ export const generateDeck = (options: { playerName: string, playerId: string }):
 
         const novelty: Novelty = {
             id: `${playerId}novelty${i}`,
+            setId: Date.now() + '',
             image: imageUrlGenerator(),
             owner: playerName,
             name: `${playerName}'s Novelty ${i}`,
             type: 'novelty',
+            category: 'weapon',
             cost: {
                 hand: Math.round(Math.random() * 2),
                 ground: Math.round(Math.random() * 2),
@@ -114,10 +118,12 @@ export const generateDeck = (options: { playerName: string, playerId: string }):
         }
         const sentient: Sentient = {
             id: `${playerId}sentient${i}`,
+            setId: Date.now() + '',
             image: imageUrlGenerator(),
             owner: playerName,
             name: `${playerName}'s Sentient ${i}`,
             type: 'sentient',
+            category: 'soldier',
             cost: {
                 hand: Math.round(Math.random() * 2),
                 ground: Math.round(Math.random() * 2),

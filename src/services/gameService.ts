@@ -23,10 +23,12 @@ class GameService {
 
     commonGround: Ground = {
         id: 'commonGround',
+        setId: 'commonGround',
         image: imageUrlGenerator(),
         owner: '',
         name: 'Common Ground',
         type: 'ground',
+        category: 'commonGround',
         occupants: [],
         connections: [],
         level: 0,
