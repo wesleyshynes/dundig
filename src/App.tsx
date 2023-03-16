@@ -8,11 +8,21 @@ import GameLog from './components/GameLog/GameLog';
 import GameOptions from './components/GameOptions/GameOptions';
 // import SelectedTarget from './components/SelectedTarget/SelectedTarget';
 import ActivePlayerBar from './components/ActivePlayerBar/ActivePlayerBar';
+import CardModal from './components/CardModal/CardModal';
+import Hand from './components/Hand/Hand';
+import SelectedCard from './components/SelectedCard/SelectedCard';
+import SelectedTarget from './components/SelectedTarget/SelectedTarget';
+import OccupantList from './components/Occupant/OccupantList';
+import DiscardList from './components/Discard/DiscardList';
 
 function App() {
 
   const [renderCount, setRenderCount] = useState(0);
-  const { activePlayer } = gameService;
+  const {
+    activePlayer,
+    activeModal,
+    modalOptions
+  } = gameService;
 
   useEffect(() => {
     if (gameService.gameState === 'new') {
@@ -43,7 +53,7 @@ function App() {
   return (
     <div className="App">
 
-      <ActivePlayerBar />      
+      <ActivePlayerBar />
 
       <hr /><hr /><hr />
 
@@ -51,7 +61,7 @@ function App() {
         R: {renderCount}
       </div> */}
 
-      <GameLog renderCount={renderCount}/>
+      <GameLog renderCount={renderCount} />
 
       <GameOptions />
 
@@ -66,6 +76,39 @@ function App() {
       {Object.keys(gameService.players).filter(x => x !== activePlayer).map((playerId) => (
         <PlayerField key={playerId} playerId={playerId} />
       ))}
+
+      <CardModal
+        key={renderCount}
+        active={activeModal ? true : false}
+        onClose={() => gameService.setActiveModal('')}
+      >
+        {activeModal === 'hand' && (
+          <div className="player-hand">
+            <Hand playerId={activePlayer} />
+          </div>
+        )}
+        {activeModal === 'selectedCard' && (
+          <div className="selected-card">
+            <SelectedCard />
+          </div>
+        )}
+        {activeModal === 'selectedTarget' && (
+          <div className="selected-target">
+            <SelectedTarget />
+          </div>
+        )}
+        {activeModal === 'occupants' && (
+          <OccupantList
+            cardId={modalOptions.cardId}
+            location={modalOptions.location}
+          />
+        )}
+        {activeModal === 'discard' && (
+          <DiscardList 
+            playerId={modalOptions.playerId}
+          />
+        )}
+      </CardModal>
 
     </div>
   );

@@ -1,10 +1,5 @@
-import { useState } from "react";
 import gameService from "../../services/gameService";
-import CardModal from "../CardModal/CardModal";
-import Hand from "../Hand/Hand";
 import PlayerInfo from "../PlayerInfo/PlayerInfo";
-import SelectedCard from "../SelectedCard/SelectedCard";
-import SelectedTarget from "../SelectedTarget/SelectedTarget";
 import './activePlayerBar.scss';
 
 export default function ActivePlayerBar() {
@@ -17,10 +12,6 @@ export default function ActivePlayerBar() {
     const {
         hand
     } = playerInfo;
-
-    const [handModalActive, setHandModalActive] = useState(false);
-    const [selectedCardModalActive, setSelectedCardModalActive] = useState(false);
-    const [selectedTargetModalActive, setSelectedTargetModalActive] = useState(false);
 
     return (
         <>
@@ -35,7 +26,7 @@ export default function ActivePlayerBar() {
                 <div className="action-buttons-wrapper flex-center">
                     <div
                         onClick={() => {
-                            setHandModalActive(true);
+                            gameService.setActiveModal('hand');
                         }}
                         className="hand-button btn-wrap flex-center">
                         Hand <br /> ({hand.length})
@@ -43,7 +34,7 @@ export default function ActivePlayerBar() {
                     <div
                         onClick={() => {
                             if (selectedCard.id) {
-                                setSelectedCardModalActive(true);
+                                gameService.setActiveModal('selectedCard');
                             }
                         }}
                         className="selected-card-button btn-wrap flex-center">
@@ -53,7 +44,7 @@ export default function ActivePlayerBar() {
                     <div
                         onClick={() => {
                             if (selectedTarget.id) {
-                                setSelectedTargetModalActive(true);
+                                gameService.setActiveModal('selectedTarget');
                             }
                         }}
                         className="selected-target-button btn-wrap flex-center">
@@ -62,33 +53,6 @@ export default function ActivePlayerBar() {
                     </div>
                 </div>
             </div>
-            <CardModal
-                active={handModalActive}
-                onClose={() => setHandModalActive(false)}
-            >
-                <div className="player-hand">
-                    <Hand playerId={activePlayer} />
-                </div>
-            </CardModal>
-
-            <CardModal
-                active={selectedCardModalActive}
-                onClose={() => setSelectedCardModalActive(false)}
-            >
-                <div className="selected-card">
-                    <SelectedCard />
-                </div>
-            </CardModal>
-
-            <CardModal
-                active={selectedTargetModalActive}
-                onClose={() => setSelectedTargetModalActive(false)}
-            >
-                <div className="selected-target">
-                    <SelectedTarget />
-                </div>
-            </CardModal>
-
         </>
     )
 }

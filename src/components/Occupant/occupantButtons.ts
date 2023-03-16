@@ -34,6 +34,13 @@ export const generateOccupantButtons = (options: {
 
     const moveTo = (targetLocation: string) => {
         gameService.handleGroundNavigation(occupantId, occupantLocation, targetLocation)
+        const splitLocation = targetLocation.split('.')
+        splitLocation.pop()
+        const locationCardId = gameService.parseLocation(splitLocation.join('.')).id
+        gameService.setActiveModal('occupants', {
+            cardId: locationCardId,
+            location: gameService.locateCardOnField(locationCardId),
+        })
         // gameService.moveCardToLocation(occupantId, occupantLocation, targetLocation)
     }
 
@@ -148,6 +155,7 @@ export const generateOccupantButtons = (options: {
             label: '👆',
             clickFn: () => {
                 gameService.selectCard({ cardId: occupantId, location: occupantLocation })
+                gameService.setActiveModal('selectedCard')
             }
         },
         {
@@ -155,6 +163,7 @@ export const generateOccupantButtons = (options: {
             label: '🎯',
             clickFn: () => {
                 gameService.selectTarget({ cardId: occupantId, location: occupantLocation })
+                gameService.setActiveModal('selectedTarget')
             }
         }
     )

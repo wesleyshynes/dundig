@@ -51,6 +51,9 @@ class GameService {
         location: '',
     }
 
+    activeModal: string = '';
+    modalOptions: any = {};
+
     showGameInfo() {
         console.log('========================================')
         console.log('cardRef', this.cardRef);
@@ -70,9 +73,22 @@ class GameService {
         this.renderFn = fn;
     }
 
+    // interface stuff
+    setActiveModal(modalName: string, options?: any) {
+        this.activeModal = modalName;
+        this.modalOptions = options;
+        this.renderFn();
+    }
+
+    // end interface stuff
+
     setActivePlayer(activePlayerOptions: { playerId: string }) {
         const { playerId } = activePlayerOptions;
         this.activePlayer = playerId;
+
+        this.activeModal = '';
+        this.modalOptions = {};
+
         this.renderFn();
     }
 
@@ -455,6 +471,28 @@ class GameService {
         const { hand, ground } = cost
         if (hand) { playerResources.hand -= hand; }
         if (ground) { playerResources.ground -= ground; }
+    }
+
+    locateCardOnField(cardId: string) {
+        let locationString = '';
+        Object.keys(this.players).forEach((playerId: string) => {
+            const player = this.players[playerId];
+            player.dungeon.forEach((cId: string) => {
+                if(cId === cardId) {
+                    locationString = `players.${playerId}.dungeon`
+                }
+            })
+            if (player.garrison.id === cardId) {
+                locationString = `players.${playerId}.garrison`
+            }
+            if (player.entrance.id === cardId) {
+                locationString = `players.${playerId}.entrance`
+            }
+        })
+        if (this.commonGround.id === cardId) {
+            locationString = `commonGround`
+        }
+        return locationString;
     }
 
     resolveField() {

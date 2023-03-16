@@ -1,8 +1,5 @@
-import { useState } from "react";
 import gameService from "../../services/gameService";
-import CardModal from "../CardModal/CardModal";
 import { CardButtonEntry } from "../GameCard/GameCard";
-import Occupant from "../Occupant/Occupant";
 import './smallGameCard.scss'
 
 export default function SmallGameCard(props: {
@@ -10,9 +7,6 @@ export default function SmallGameCard(props: {
     location: string,
     buttons: CardButtonEntry[]
 }) {
-
-    const [showOccupants, setShowOccupants] = useState(false);
-
     const { selectedCard } = gameService;
 
     const { cardId, location } = props;
@@ -84,33 +78,16 @@ export default function SmallGameCard(props: {
                             }))}
                         </div>
 
-                        <button onClick={() => setShowOccupants(true)}>
+                        <button onClick={() => {
+                            gameService.setActiveModal('occupants', {
+                                cardId,
+                                location
+                            })
+                        }}>
                             🔎
                         </button>
 
                     </div>
-
-
-                    <CardModal
-                        active={showOccupants}
-                        onClose={() => setShowOccupants(false)}
-                    >
-                        <div className="occupant-list">
-                            {cardInfo.occupants.map((occupant, idx) => {
-                                return (
-                                    <Occupant
-                                        key={idx}
-                                        occupantId={occupant}
-                                        occupantLocation={`cardRef.${cardId}.occupants`}
-                                        location={location}
-                                        locationId={cardId}
-                                    />
-                                )
-                            }
-                            )}
-                        </div>
-
-                    </CardModal>
                 </div>
             )}
 

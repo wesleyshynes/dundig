@@ -1,5 +1,5 @@
 import gameService from "../../services/gameService";
-import GameCard from "../GameCard/GameCard";
+import FullGameCard from "../FullGameCard/FullGameCard";
 import './selectedTarget.scss'
 
 export default function SelectedTarget() {
@@ -17,7 +17,7 @@ export default function SelectedTarget() {
     return (
         <div className="selected-target">
             SELECTED TARGET: <br />
-            <GameCard
+            <FullGameCard
                 cardId={id}
                 location={location}
                 buttons={[
