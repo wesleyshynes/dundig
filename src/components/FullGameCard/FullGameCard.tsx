@@ -66,6 +66,7 @@ export default function FullGameCard(props: {
             <div className="full-card-buttons">
                 {props.buttons.map((button, idx) => (
                     <button
+                        title={button.label}
                         key={idx}
                         disabled={button.disable}
                         onClick={() => button.clickFn({ cardId, location })}>

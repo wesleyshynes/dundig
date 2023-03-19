@@ -23,7 +23,7 @@ export default function CardModal(props: {
             onClose()
         }}>
             <div className="card-modal">
-                <button onClick={() => onClose()}>close</button>
+                <button onClick={() => onClose()} title="close">close</button>
                 {props.children}
             </div>
         </div>

@@ -10,12 +10,14 @@ const untargetFunction = (o: { cardId: string, location: string }) => {
 
 export const TARGET_BUTTON = {
     label: 'target',
-    clickFn: targetFunction
+    clickFn: targetFunction,
+    title: 'target'
 }
 
 export const UNTARGET_BUTTON = {
     label: 'untarget',
-    clickFn: untargetFunction
+    clickFn: untargetFunction,
+    title: 'untarget'
 }
 
 const selectCardFunction = (o: { cardId: string, location: string }) => {
@@ -24,11 +26,13 @@ const selectCardFunction = (o: { cardId: string, location: string }) => {
 
 export const SELECT_CARD_BUTTON = {
     label: 'select',
-    clickFn: selectCardFunction
+    clickFn: selectCardFunction,
+    title: 'select'
 }
 
 // small buttons
 export const SMALL_TARGET_BUTTON = {
     label: '🎯',
     clickFn: targetFunction,
+    title: 'target'
 }

@@ -33,13 +33,15 @@ export default function Hand(props: {
                         SELECT_CARD_BUTTON,
                         {
                             clickFn: payHandCard,
-                            label: 'pay hand'
+                            label: 'pay hand',
+                            title: 'pay hand',
                         }
                     ]
                     if (cardInfo.type === 'ground') {
                         cardButtons.push({
                             clickFn: playGroundCard,
                             label: 'play ground',
+                            title: 'play ground',
                             disable: cardInfo.level > gameService.players[playerId].dungeon.length + 1
                         })
                     }

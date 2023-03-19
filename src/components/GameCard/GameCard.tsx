@@ -5,7 +5,8 @@ import './gameCard.scss'
 export interface CardButtonEntry {
     clickFn: (o: { cardId: string, location: string }) => void,
     label: string,
-    disable?: boolean
+    disable?: boolean,
+    title: string,
 }
 
 export default function GameCard(props: {
@@ -80,6 +81,7 @@ export default function GameCard(props: {
                 {props.buttons.map((button, idx) => (
                     <button
                         key={idx}
+                        title={button.label}
                         disabled={button.disable}
                         onClick={() => button.clickFn({ cardId, location })}>
                         {button.label}

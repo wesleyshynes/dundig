@@ -58,6 +58,7 @@ export default function SmallGameCard(props: {
                 {props.buttons.map((button, idx) => (
                     <button
                         key={idx}
+                        title={button.title}
                         disabled={button.disable}
                         onClick={() => button.clickFn({ cardId, location })}>
                         {button.label}
@@ -78,7 +79,7 @@ export default function SmallGameCard(props: {
                             }))}
                         </div>
 
-                        <button onClick={() => {
+                        <button title={'view occupants'} onClick={() => {
                             gameService.setActiveModal('occupants', {
                                 cardId,
                                 location

@@ -54,6 +54,7 @@ export default function Garrison(props: {
                     {buttons.map((button, idx) => (
                         <button
                             key={idx}
+                            title={button.label}
                             disabled={button.disable}
                             onClick={() => button.clickFn({ cardId, location })}>
                             {button.label}

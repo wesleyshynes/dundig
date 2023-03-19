@@ -8,11 +8,13 @@ export default function GameOptions() {
             {gameService.players && Object.keys(gameService.players).map((playerId) => (
                 <div key={`${playerId}-dev-options`}>
                     <button
+                        title={`play as ${playerId}`}
                         onClick={() => gameService.setActivePlayer({ playerId })}
                         disabled={activePlayer === playerId}>
                         play as {playerId}
                     </button>
                     <button
+                        title={`add resources to ${playerId}`}
                         onClick={() => {
                             gameService.players[playerId].resources.hand += 1
                             gameService.players[playerId].resources.ground += 1
@@ -24,7 +26,7 @@ export default function GameOptions() {
                 </div>
             ))}
             {/* show game info button */}
-            <button onClick={() => gameService.showGameInfo()}>Log</button>
+            <button title={'log log'} onClick={() => gameService.showGameInfo()}>Log</button>
         </div>
     )
 }

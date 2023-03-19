@@ -17,6 +17,7 @@ export default function SelectedCard() {
 
     const cardButtons = [{
         label: 'deselect',
+        title: 'deselect card',
         clickFn: () => { gameService.deselectCard() }
     }]
 
@@ -36,6 +37,7 @@ export default function SelectedCard() {
         ) {
             // TODO: add button to play at target
             cardButtons.push({
+                title: 'play sentient here',
                 label: 'play',
                 clickFn: () => {
                     gameService.playSentientInGround(
@@ -53,6 +55,7 @@ export default function SelectedCard() {
         const canPayCost = gameService.canPayCost(activePlayer, cardInfo.cost);
         if (canPayCost) {
             cardButtons.push({
+                title: 'play novelty',
                 label: 'play',
                 clickFn: () => {
                     gameService.playNovelty(

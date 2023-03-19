@@ -23,7 +23,8 @@ export default function SelectedTarget() {
                 buttons={[
                     {
                         label: 'deselect',
-                        clickFn: () => { gameService.deselectTarget() }
+                        clickFn: () => { gameService.deselectTarget() },
+                        title: 'deselect target'
                     }
                 ]}
             />

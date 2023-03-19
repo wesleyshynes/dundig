@@ -40,7 +40,7 @@ export default function Entrance(props: {
         ) {
             // TODO: add button to play at target
             entranceButtons.push({
-                // label: 'play',
+                title: 'play here',
                 label: '▶️',
                 clickFn: playSentientInGround
             })

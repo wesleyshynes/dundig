@@ -10,7 +10,7 @@ export default function Discard(props: {
     return (
         <div className="discard">
             discard: {playerDiscard.length} <br />
-            <button onClick={() => gameService.setActiveModal('discard', { playerId })}>
+            <button title="view" onClick={() => gameService.setActiveModal('discard', { playerId })}>
                 view
             </button>
         </div>
