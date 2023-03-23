@@ -17,6 +17,11 @@ class GameService {
     log: string[] = [];
     renderCount: number = 0;
 
+    thisTurn: any = {
+        played: {},
+        groundPlayed: false
+    }
+
     cardVoid: string[] = [];
 
     renderFn = () => { };
@@ -135,8 +140,18 @@ class GameService {
         }
     }
 
+    resetThisTurn() {
+        this.thisTurn = {
+            played: {},
+            groundPlayed: false
+        }
+    }
+
     endTurn() {
         this.drawCard({ playerId: this.activePlayer });
+        
+        this.resetThisTurn()
+        
         const currentTurnOrder = this.players[this.playerTurn].order;
         const nextTurnOrder = currentTurnOrder + 1 === Object.keys(this.players).length ? 0 : currentTurnOrder + 1;
         const nextTurnPlayer = Object.keys(this.players).find(playerId => this.players[playerId].order === nextTurnOrder);
@@ -657,6 +672,9 @@ class GameService {
         this.payCardCost(playerId, card.cost);
         // TODO: add something to determine and execute what the sentient does on play
         this.moveCardToLocation(cardId, cardLocationString, `cardRef.${locationId}.occupants`);
+
+        this.setPlayedCardThisTurn(cardId)
+
         this.deselectCard()
         this.deselectTarget()
         this.resolveGround(`cardRef.${locationId}.occupants`)
@@ -764,6 +782,15 @@ class GameService {
         this.deselectTarget()
 
         this.renderFn();
+    }
+
+    // THIS TURN RELATED STUFF
+    setGroundPlayedThisTurn() {
+        this.thisTurn.groundPlayed = true;
+    }
+
+    setPlayedCardThisTurn(cardId: string) {
+        this.thisTurn.played[cardId] = true;
     }
 
 }

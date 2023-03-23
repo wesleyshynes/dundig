@@ -8,7 +8,7 @@ export default function Hand(props: {
 }) {
 
     const { playerId } = props;
-    const { activePlayer } = gameService;
+    const { activePlayer, thisTurn: { groundPlayed } } = gameService;
     const hand = gameService.players[playerId].hand;
 
     const myHand = activePlayer === playerId;
@@ -20,6 +20,7 @@ export default function Hand(props: {
 
     const playGroundCard = (o: { cardId: string, location: string }) => {
         const { cardId, location } = o;
+        gameService.setGroundPlayedThisTurn()
         gameService.moveCardToLocation(cardId, location, `players.${playerId}.dungeon`)
     }
 
@@ -42,7 +43,7 @@ export default function Hand(props: {
                             clickFn: playGroundCard,
                             label: 'play ground',
                             title: 'play ground',
-                            disable: cardInfo.level > gameService.players[playerId].dungeon.length + 1
+                            disable: groundPlayed || gameService.players[playerId].dungeon.length === 7  || cardInfo.level > gameService.players[playerId].dungeon.length + 1
                         })
                     }
                     return myHand ? (

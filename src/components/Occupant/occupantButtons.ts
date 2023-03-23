@@ -23,11 +23,13 @@ export const generateOccupantButtons = (options: {
         speed 
     } = occupantInfo
 
-    const { activePlayer } = gameService;
+    const { activePlayer, thisTurn: { played } } = gameService;
     const cardLocation = location.split('.');
 
     const cardLocationType = cardLocation[cardLocation.length - 1];
     const isOccupantOwner = activePlayer === gameService.cardRef[occupantId].owner
+
+    const movementDisabled = played[occupantId] || speed <= 0
 
 
     const buttons = []
@@ -58,7 +60,7 @@ export const generateOccupantButtons = (options: {
             clickFn: () => {
                 moveTo(moveBack)
             },
-            disable: speed <= 0
+            disable: movementDisabled
         })
 
         const moveForward = locationSpot === locationRef.length - 1 ? `players.${locationOwner}.garrison.occupants` :
@@ -69,7 +71,7 @@ export const generateOccupantButtons = (options: {
             clickFn: () => {
                 moveTo(moveForward)
             },
-            disable: speed <= 0
+            disable: movementDisabled
         })
     }
 
@@ -86,7 +88,7 @@ export const generateOccupantButtons = (options: {
             clickFn: () => {
                 moveTo(moveBackward)
             },
-            disable: speed <= 0
+            disable: movementDisabled
         })
         isOccupantOwner && buttons.push({
             title: 'move to entrance',
@@ -94,7 +96,7 @@ export const generateOccupantButtons = (options: {
             clickFn: () => {
                 moveTo(moveEntrance)
             },
-            disable: speed <= 0
+            disable: movementDisabled
         })
     }
 
@@ -110,7 +112,7 @@ export const generateOccupantButtons = (options: {
             clickFn: () => {
                 moveTo(moveIn)
             },
-            disable: speed <= 0
+            disable: movementDisabled
         })
         const moveToCommonGround = `cardRef.commonGround.occupants`
         isOccupantOwner && buttons.push({
@@ -119,7 +121,7 @@ export const generateOccupantButtons = (options: {
             clickFn: () => {
                 moveTo(moveToCommonGround)
             },
-            disable: speed <= 0
+            disable: movementDisabled
         })
     }
 
@@ -132,7 +134,7 @@ export const generateOccupantButtons = (options: {
             clickFn: () => {
                 moveTo(moveToMyEntrance)
             },
-            disable: speed <= 0
+            disable: movementDisabled
         })
         const opponentName = Object.keys(gameService.players).filter(player => player !== activePlayer)[0]
         if (opponentName) {
@@ -143,7 +145,7 @@ export const generateOccupantButtons = (options: {
                 clickFn: () => {
                     moveTo(moveToOpponentEntrance)
                 },
-                disable: speed <= 0
+                disable: movementDisabled
             })
         }
     }
