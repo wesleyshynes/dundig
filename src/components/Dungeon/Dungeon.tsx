@@ -64,7 +64,7 @@ export default function Dungeon(props: {
                     if (myDungeon && index === playerDungeon.length - 1 && groundsInfo.type === 'ground') {
                         dungeonButtons.push({
                             clickFn: payGroundCard,
-                            // label: 'pay ground',
+                            title: 'pay ground',
                             label: '🏠',
                             disable: groundsInfo.occupants.length > 0
                         })
@@ -84,7 +84,7 @@ export default function Dungeon(props: {
                         ) {
                             // TODO: add button to play at target
                             dungeonButtons.push({
-                                // label: 'play',
+                                title: 'play',
                                 label: '▶️',
                                 clickFn: playSentientInGround
                             })
