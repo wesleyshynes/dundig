@@ -349,10 +349,9 @@ class GameService {
         if (selectedCardLocationType === 'hand') {
             if (cardSelected.type === 'ground') {
                 if (targetLocationType === 'dungeon') {
+                    const cardOwner = selectedCardLocation[1];
                     // allow your own hand cards to be played to your dungeon
-                    // todo: check level and size of dungeon
-                    // todo: update the linking of the grounds
-                    return targetLocation[1] === this.activePlayer && selectedCardLocation[1] === this.activePlayer;
+                    return !this.thisTurn.groundPlayed && targetLocation[1] === this.activePlayer && selectedCardLocation[1] === this.activePlayer && cardSelected.level <= this.players[cardOwner].dungeon.length + 1 && this.players[cardOwner].dungeon.length < 7;
                 }
             }
         }

@@ -1,4 +1,5 @@
 import { Sentient } from "../../types/sentient.model";
+import { statModText } from "./effectHelpers";
 
 class NoveltyEffectService {
     getEffectDetails(effectId: string) {
@@ -9,7 +10,7 @@ class NoveltyEffectService {
 interface NoveltyEffect {
     id: string;
     name: string;
-    description: string;
+    description: (a: any) => string;
     effect: (requirements: any) => any;
     requirements: any;
     cleanupEffect?: (requirements: any) => any;
@@ -22,7 +23,9 @@ const noveltyEffectList: {
     doNothing: {
         id: 'doNothing',
         name: 'Do Nothing',
-        description: 'Do nothing',
+        description: (a: any) => {
+            return 'This does nothing. You should probably use it to pay for something.'
+        },
         effect: (_: any) => {
             return {
                 success: true,
@@ -34,7 +37,9 @@ const noveltyEffectList: {
     dealDamagetoTargetSentient: {
         id: 'dealDamagetoTargetSentient',
         name: 'Deal Damage to Target Sentient',
-        description: 'Deal damage to a target sentient on the field',
+        description: (a: any) => {
+            return `Deal ${a.amount} damage to target Sentient.`
+        },
         effect: (requirements: { target: Sentient, amount: number }) => {
             const { target, amount } = requirements;
             target.health -= amount
@@ -58,7 +63,9 @@ const noveltyEffectList: {
     modifySentientStats: {
         id: 'modifySentientStats',
         name: 'Modify Sentient Stats',
-        description: `Modify a sentient's stats`,
+        description: (a: any) => {
+            return `Target Sentient gets ${statModText(a.amount)}.`
+        },
         effect: (requirements: { target: Sentient, amount: any }) => {
             const {
                 target,

@@ -39,6 +39,7 @@ export default function Dungeon(props: {
 
             {gameService.canPlaySelectedCardHere(`players.${playerId}.dungeon`) && (
                 <button title="play room here" onClick={() => {
+                    gameService.setGroundPlayedThisTurn()
                     gameService.playSelectedCardHere(`players.${playerId}.dungeon`)
                 }}>
                     Play Room Here

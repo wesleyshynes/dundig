@@ -27,7 +27,8 @@ export const generateOccupantButtons = (options: {
     const cardLocation = location.split('.');
 
     const cardLocationType = cardLocation[cardLocation.length - 1];
-    const isOccupantOwner = activePlayer === gameService.cardRef[occupantId].owner
+    const occupantOwner = gameService.cardRef[occupantId].owner
+    const isOccupantOwner = activePlayer === occupantOwner
 
     const movementDisabled = played[occupantId] || speed <= 0
 
@@ -90,7 +91,7 @@ export const generateOccupantButtons = (options: {
             },
             disable: movementDisabled
         })
-        isOccupantOwner && buttons.push({
+        isOccupantOwner && locationOwner === occupantOwner && buttons.push({
             title: 'move to entrance',
             label: '🚪',
             clickFn: () => {
@@ -102,6 +103,15 @@ export const generateOccupantButtons = (options: {
 
     // ENTRANCE OCCUPANT ACTIONS
     if (cardLocationType === 'entrance') {
+        const moveToCommonGround = `cardRef.commonGround.occupants`
+        isOccupantOwner && buttons.push({
+            title: 'move to common ground',
+            label: '🌎',
+            clickFn: () => {
+                moveTo(moveToCommonGround)
+            },
+            disable: movementDisabled
+        })
         const locationOwner = cardLocation[1]
         const locationOwnerDungeon = gameService.players[locationOwner].dungeon
         const moveIn = locationOwnerDungeon.length > 0 ? `cardRef.${locationOwnerDungeon[0]}.occupants` :
@@ -114,15 +124,7 @@ export const generateOccupantButtons = (options: {
             },
             disable: movementDisabled
         })
-        const moveToCommonGround = `cardRef.commonGround.occupants`
-        isOccupantOwner && buttons.push({
-            title: 'move to common ground',
-            label: '🌎',
-            clickFn: () => {
-                moveTo(moveToCommonGround)
-            },
-            disable: movementDisabled
-        })
+        
     }
 
     // COMMON GROUND OCCUPANT ACTIONS

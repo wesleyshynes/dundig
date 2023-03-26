@@ -1,5 +1,6 @@
 import { Ground } from "../../types/ground.model";
 import { Sentient } from "../../types/sentient.model";
+import { statModText } from "./effectHelpers";
 
 class GroundEffectService {
     getEffectDetails(effectId: string) {
@@ -10,7 +11,7 @@ class GroundEffectService {
 interface GroundEffect {
     id: string;
     name: string;
-    description: string;
+    description: (a: any) => string;
     effect: (requirements: any) => any;
     requirements: any;
     cleanupEffect?: (requirements: any) => any;
@@ -22,7 +23,9 @@ const groundEffectList: {
     doNothing: {
         id: 'doNothing',
         name: 'Do Nothing',
-        description: 'Do nothing',
+        description: (a: any) => {
+            return 'This does nothing. You should probably use it to pay for something.'
+        },
         effect: (_: any) => {
             return {
                 success: true,
@@ -34,7 +37,29 @@ const groundEffectList: {
     modifySentientStats: {
         id: 'modifySentientStats',
         name: 'Modify Sentient Stats',
-        description: `Modify a sentient's stats`,
+        description: (a: any) => {
+            const {
+                friendlyAmount,
+                enemyAmount
+            } = a;
+
+            let text = '';
+
+            if (friendlyAmount) {
+                text += `Friendly Sentients get ${statModText(friendlyAmount)}.`;
+            }
+
+            if (enemyAmount) {
+                let moddedStats = statModText(enemyAmount)
+                text += text ? ' ' : '';
+                text += `Enemy Sentients get ${moddedStats}.`;
+            }
+
+            text += ' While they are in the dungeon.'
+
+            return text;
+
+        },
         effect: (requirements: {
             target: Sentient,
             groundInfo: Ground,

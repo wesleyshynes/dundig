@@ -48,13 +48,13 @@ export default function FullGameCard(props: {
     if (type === 'novelty') {
         const effectDetails = noveltyEffectService.getEffectDetails(cardInfo.effectId);
         if (effectDetails) {
-            effectText = effectDetails.description;
+            effectText = effectDetails.description(cardInfo.effectArgs);
         }
     }
     if (type === 'ground' && cardInfo.effectId !== null) {
         const effectDetails = groundEffectService.getEffectDetails(cardInfo.effectId);
         if (effectDetails) {
-            effectText = effectDetails.description;
+            effectText = effectDetails.description(cardInfo.effectArgs);
         }
     }
 
