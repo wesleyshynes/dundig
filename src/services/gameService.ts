@@ -136,7 +136,7 @@ class GameService {
     handleEndOfTurnCard(cardId: string) {
         const cardInfo = this.cardRef[cardId];
         if (cardInfo.type === 'sentient') {
-            cardInfo.speed = cardInfo.originalStats.speed;
+            cardInfo.speed = cardInfo.originalStats.speed + cardInfo.modifiers.speed;
         }
     }
 
