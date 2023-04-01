@@ -149,9 +149,9 @@ class GameService {
 
     endTurn() {
         this.drawCard({ playerId: this.activePlayer });
-        
+
         this.resetThisTurn()
-        
+
         const currentTurnOrder = this.players[this.playerTurn].order;
         const nextTurnOrder = currentTurnOrder + 1 === Object.keys(this.players).length ? 0 : currentTurnOrder + 1;
         const nextTurnPlayer = Object.keys(this.players).find(playerId => this.players[playerId].order === nextTurnOrder);
@@ -426,6 +426,7 @@ class GameService {
                 this.sendToDiscard(occupantId, `cardRef.${cardId}.occupants`);
             }
         }
+
         if (cardInfo.effectedSentients) {
             while (cardInfo.effectedSentients.length > 0) {
                 const effectedSentientId = cardInfo.effectedSentients.pop()
@@ -492,7 +493,7 @@ class GameService {
         Object.keys(this.players).forEach((playerId: string) => {
             const player = this.players[playerId];
             player.dungeon.forEach((cId: string) => {
-                if(cId === cardId) {
+                if (cId === cardId) {
                     locationString = `players.${playerId}.dungeon`
                 }
             })
@@ -527,8 +528,40 @@ class GameService {
         this.moveCardToLocation(cardId, locationString, targetLocationString)
         const cardInfo = this.cardRef[cardId]
         // handle speed usage
-        if (cardInfo.type === 'sentient') {
+        if (cardInfo.type === 'sentient' && cardInfo.groundEffects) {
             cardInfo.speed -= 1
+
+            // this handles any ground cleanup effects
+            const targetLocationCard = targetLocationString.split('.')[1]
+            const targetLocationCardInfo = this.cardRef[targetLocationCard]
+            const targetLocationOwner = targetLocationCardInfo.owner
+
+            cardInfo.groundEffects = cardInfo.groundEffects.filter((effectCardId: string) => {
+                const effectCardInfo = this.cardRef[effectCardId]
+                if (effectCardInfo.type !== 'ground') { return false }
+                if (effectCardInfo.owner === targetLocationOwner) { return true }
+
+                const effectedSentientId = cardInfo.id
+                const { effectId, effectArgs } = effectCardInfo
+                const effectDetails = groundEffectService.getEffectDetails(effectId);
+                if (effectDetails && effectedSentientId) {
+                    const { cleanupEffect } = effectDetails
+                    if (cleanupEffect) {
+                        const effectResult = cleanupEffect({
+                            target: this.cardRef[effectedSentientId],
+                            groundInfo: effectCardInfo,
+                            ...effectArgs
+                        })
+                        if (effectResult) {
+                            console.log(cardId, 'effect removed from', effectedSentientId)
+                        }
+                    }
+                }
+                effectCardInfo.effectedSentients = effectCardInfo.effectedSentients.filter((id: string) => id !== effectedSentientId)
+
+                return false
+            })
+
         }
         this.resolveField()
     }
