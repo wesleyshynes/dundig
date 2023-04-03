@@ -51,7 +51,7 @@ export default function Dungeon(props: {
 
                     if(cardId === 'empty') {
                         return (
-                            <div className="empty-dungeon-card flex-center">
+                            <div key={index} className="empty-dungeon-card flex-center">
                                 :(
                             </div>
                         )
