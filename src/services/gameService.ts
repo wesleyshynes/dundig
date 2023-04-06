@@ -825,6 +825,151 @@ class GameService {
         this.thisTurn.played[cardId] = true;
     }
 
+
+    // NEW TURN PROCESS
+    getAvailableActions(cardId: string) {
+        const availableActions: any = []
+        const cardInfo = this.cardRef[cardId];
+        if (!cardInfo) { return availableActions }
+        const cardLocation = this.findCardOnField(cardId);
+
+        if (cardLocation.place === 'hand' &&
+            cardLocation.side === this.playerTurn &&
+            this.playerTurn === cardInfo.owner &&
+            cardInfo.owner === this.activePlayer) {
+            if (cardInfo.type === 'ground') {
+                if (
+                    !this.thisTurn.groundPlayed &&
+                    this.players[this.playerTurn].dungeon.length < 7 &&
+                    cardInfo.level <= this.players[this.playerTurn].dungeon.length + 1
+                ) {
+                    availableActions.push('Play Ground Card')
+                }
+            }
+
+            if (cardInfo.type === 'sentient') {
+                if (this.hasResourcesToPlay(cardInfo.owner, cardId)) {
+                    availableActions.push('Play Sentient Card')
+                }
+            }
+
+            if (cardInfo.type === 'novelty') {
+                if (this.hasResourcesToPlay(cardInfo.owner, cardId)) {
+                    availableActions.push('Play Novelty Card')
+                }
+            }
+
+        }
+        return availableActions
+    }
+
+    hasResourcesToPlay(playerId: string, cardId: string) {
+        const cardInfo = this.cardRef[cardId];
+        if (!cardInfo || cardInfo.type === 'ground') { return false; }
+        const playerResources = this.players[playerId].resources;
+        const playerHand = this.players[playerId].hand;
+        const playerDungeon = this.players[playerId].dungeon;
+        const { hand, ground } = cardInfo.cost;
+        if (hand && (playerResources.hand + playerHand.length - 1) < hand) { return false; }
+        let availableGrounds: number = 0;
+        let emptyRooms: boolean = true;
+        ([...playerDungeon]).forEach((dungeonCardId: string) => {
+            if (!emptyRooms) { return }
+            const dungeonCard = this.cardRef[dungeonCardId];
+            if (dungeonCard.type !== 'ground') { return }
+            if (dungeonCard.occupants.length === 0) {
+                availableGrounds += 1;
+            } else {
+                emptyRooms = false;
+            }
+        })
+        if (ground && (playerResources.ground + availableGrounds) < ground) { return false; }
+        return true;
+    }
+
+
+
+    findCardOnField(findId: string) {
+        const locationInfo = {
+            side: '',
+            place: '',
+            cardId: ''
+        }
+
+        Object.keys(this.players).forEach((playerId: string) => {
+            const player = this.players[playerId];
+
+            player.hand.forEach((cardId: string) => {
+                if (cardId === findId) {
+                    locationInfo.side = playerId;
+                    locationInfo.place = 'hand';
+                }
+            })
+
+            player.deck.forEach((cardId: string) => {
+                if (cardId === findId) {
+                    locationInfo.side = playerId;
+                    locationInfo.place = 'deck';
+                }
+            })
+
+            player.discard.forEach((cardId: string) => {
+                if (cardId === findId) {
+                    locationInfo.side = playerId;
+                    locationInfo.place = 'discard';
+                }
+            })
+
+            player.dungeon.forEach((cardId: string) => {
+                if (cardId === findId) {
+                    locationInfo.side = playerId;
+                    locationInfo.place = 'dungeon';
+                }
+                const dungeonCard = this.cardRef[cardId];
+                if (dungeonCard.type === 'ground' && dungeonCard.occupants) {
+                    dungeonCard.occupants.forEach((occupantId: string) => {
+                        if (occupantId === findId) {
+                            locationInfo.side = playerId;
+                            locationInfo.place = 'dungeon';
+                            locationInfo.cardId = cardId;
+                        }
+                    })
+                }
+            })
+
+            if (player.entrance && player.entrance.occupants) {
+                player.entrance.occupants.forEach((occupantId: string) => {
+                    if (occupantId === findId) {
+                        locationInfo.side = playerId;
+                        locationInfo.place = 'entrance';
+                        locationInfo.cardId = player.entrance.id;
+                    }
+                })
+            }
+
+            if (player.garrison && player.garrison.occupants) {
+                player.garrison.occupants.forEach((occupantId: string) => {
+                    if (occupantId === findId) {
+                        locationInfo.side = playerId;
+                        locationInfo.place = 'garrison';
+                        locationInfo.cardId = player.garrison.id;
+                    }
+                })
+            }
+        })
+
+        if (this.commonGround && this.commonGround.occupants) {
+            this.commonGround.occupants.forEach((occupantId: string) => {
+                if (occupantId === findId) {
+                    locationInfo.side = 'common';
+                    locationInfo.place = 'commonGround';
+                    locationInfo.cardId = this.commonGround.id;
+                }
+            })
+        }
+        return locationInfo
+    }
+
 }
 
 const gameService = new GameService();

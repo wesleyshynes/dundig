@@ -15,6 +15,8 @@ export default function SelectedCard() {
         )
     }
 
+    const availableActions = gameService.getAvailableActions(id);
+
     const cardButtons = [{
         label: 'deselect',
         title: 'deselect card',
@@ -76,6 +78,13 @@ export default function SelectedCard() {
                 location={location}
                 buttons={cardButtons}
             />
+
+            <br />
+            {availableActions.map((action: string, idx: number) => (
+                <div key={idx}>
+                    {action}
+                </div>
+            ))}
         </div>
     )
 }
