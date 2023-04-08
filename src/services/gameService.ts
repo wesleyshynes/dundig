@@ -828,15 +828,27 @@ class GameService {
 
     // NEW TURN PROCESS
     getAvailableActions(cardId: string) {
+
+        const FIELD_LOCATION: { [k: string]: boolean } = {
+            dungeon: true,
+            garrison: true,
+            commonGround: true,
+            entrance: true,
+        }
+
         const availableActions: any = []
         const cardInfo = this.cardRef[cardId];
         if (!cardInfo) { return availableActions }
         const cardLocation = this.findCardOnField(cardId);
 
-        if (cardLocation.place === 'hand' &&
+        // HAND CARD ACTIONS
+        if (
+            cardLocation.place === 'hand' &&
             cardLocation.side === this.playerTurn &&
             this.playerTurn === cardInfo.owner &&
-            cardInfo.owner === this.activePlayer) {
+            cardInfo.owner === this.activePlayer
+        ) {
+
             if (cardInfo.type === 'ground') {
                 if (
                     !this.thisTurn.groundPlayed &&
@@ -858,8 +870,59 @@ class GameService {
                     availableActions.push('Play Novelty Card')
                 }
             }
-
         }
+
+        // FIELD CARD ACTIONS for Sentients
+        if (
+            FIELD_LOCATION[cardLocation.place] &&
+            cardInfo.owner === this.activePlayer &&
+            cardInfo.owner === this.playerTurn &&
+            cardInfo.type === 'sentient'
+        ) {
+            const canMove = cardInfo.speed > 0 && !this.thisTurn.played[cardId];
+
+            if (cardLocation.place === 'dungeon' && canMove) {
+                const dungeonRef = this.players[cardLocation.side].dungeon;
+                if (cardLocation.placeIndex === dungeonRef.length - 1) {
+                    availableActions.push('Move forward to Garrison')
+                }
+                if (cardLocation.placeIndex === 0) {
+                    availableActions.push('Move backward to Entrance')
+                }
+            }
+
+            if (cardLocation.place === 'garrison' && canMove) {
+                const dungeonRef = this.players[cardLocation.side].dungeon;
+                if (dungeonRef.length > 0) {
+                    availableActions.push('Move backward to Dungeon')
+                }
+                if (
+                    dungeonRef.length === 0 ||
+                    (cardInfo.owner === cardLocation.side)
+                ) {
+                    availableActions.push('Move to Entrance')
+                }
+            }
+
+            if (cardLocation.place === 'commonGround' && canMove) {
+                availableActions.push('Move back to your Entrance')
+                availableActions.push('Move forward to Enemy Entrance')
+            }
+
+            if (cardLocation.place === 'entrance' && canMove) {
+                const dungeonRef = this.players[cardLocation.side].dungeon;
+                availableActions.push('Move back to Common Ground')
+                if (dungeonRef.length > 0) {
+                    availableActions.push('Move forward to Dungeon')
+                } else {
+                    availableActions.push('Move to Garrison')
+                }
+            }
+        }
+
+
+
+
         return availableActions
     }
 
@@ -893,37 +956,43 @@ class GameService {
         const locationInfo = {
             side: '',
             place: '',
-            cardId: ''
+            cardId: '',
+            placeIndex: -1
         }
 
         Object.keys(this.players).forEach((playerId: string) => {
             const player = this.players[playerId];
 
-            player.hand.forEach((cardId: string) => {
+            player.hand.forEach((cardId: string, idx: number) => {
                 if (cardId === findId) {
                     locationInfo.side = playerId;
                     locationInfo.place = 'hand';
+                    locationInfo.cardId = cardId;
+                    locationInfo.placeIndex = idx;
                 }
             })
 
-            player.deck.forEach((cardId: string) => {
+            player.deck.forEach((cardId: string, idx: number) => {
                 if (cardId === findId) {
                     locationInfo.side = playerId;
                     locationInfo.place = 'deck';
+                    locationInfo.placeIndex = idx;
                 }
             })
 
-            player.discard.forEach((cardId: string) => {
+            player.discard.forEach((cardId: string, idx: number) => {
                 if (cardId === findId) {
                     locationInfo.side = playerId;
                     locationInfo.place = 'discard';
+                    locationInfo.placeIndex = idx;
                 }
             })
 
-            player.dungeon.forEach((cardId: string) => {
+            player.dungeon.forEach((cardId: string, idx: number) => {
                 if (cardId === findId) {
                     locationInfo.side = playerId;
                     locationInfo.place = 'dungeon';
+                    locationInfo.placeIndex = idx;
                 }
                 const dungeonCard = this.cardRef[cardId];
                 if (dungeonCard.type === 'ground' && dungeonCard.occupants) {
@@ -932,6 +1001,7 @@ class GameService {
                             locationInfo.side = playerId;
                             locationInfo.place = 'dungeon';
                             locationInfo.cardId = cardId;
+                            locationInfo.placeIndex = idx;
                         }
                     })
                 }
