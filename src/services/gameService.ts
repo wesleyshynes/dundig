@@ -2,6 +2,7 @@ import { generateDeck, imageUrlGenerator } from "../generators/deckGenerator";
 import { generatePlayer } from "../generators/playerGenerator";
 import { CardCost } from "../types/cost.model";
 import { Ground } from "../types/ground.model";
+import { CardLocation } from "../types/location.model";
 import { Novelty } from "../types/novelty.model";
 import { Player } from "../types/player.model";
 import { Sentient } from "../types/sentient.model";
@@ -855,7 +856,15 @@ class GameService {
                     this.players[this.playerTurn].dungeon.length < 7 &&
                     cardInfo.level <= this.players[this.playerTurn].dungeon.length + 1
                 ) {
-                    availableActions.push('Play Ground Card')
+                    availableActions.push(['Play Ground Card', () => {
+                        this.moveCard(cardId, {
+                            place: 'dungeon',
+                            side: this.playerTurn,
+                            placeIndex: this.players[this.playerTurn].dungeon.length,
+                        })
+                        this.deselectCard()
+                        this.setActiveModal('')
+                    }])
                 }
             }
 
@@ -920,9 +929,6 @@ class GameService {
             }
         }
 
-
-
-
         return availableActions
     }
 
@@ -950,6 +956,51 @@ class GameService {
         return true;
     }
 
+    moveCard(moveCardId: string, targetLocation: CardLocation) {
+        const currentLocation = this.findCardOnField(moveCardId);
+        // remove card from location
+        if(currentLocation.side) {
+            const {
+                side,
+                place,
+                // placeIndex,
+                cardId
+            } = currentLocation;
+            if(cardId) {
+                const locationCardInfo = this.cardRef[cardId];
+                if(locationCardInfo && locationCardInfo.type === 'ground') {
+                    locationCardInfo.occupants = locationCardInfo.occupants.filter((occupantId: string) => {
+                        return occupantId !== moveCardId;
+                    })
+                }
+            }
+            if(!cardId && side !== 'common' && this.players[side]) {
+                const playerSideRef: any = this.players[side];
+                if(playerSideRef[place]) {
+                    playerSideRef[place] = playerSideRef[place].filter((cardId: string) => {
+                        return cardId !== moveCardId;
+                    })
+                }
+            }
+        }
+
+        // add card to location
+        if(targetLocation.cardId) {
+            const targetCardInfo = this.cardRef[targetLocation.cardId];
+            if(targetCardInfo && targetCardInfo.type === 'ground') {
+                targetCardInfo.occupants.push(moveCardId);
+            }
+        }
+        if(!targetLocation.cardId && targetLocation.side !== 'common' && this.players[targetLocation.side]) {
+            const playerSideRef: any = this.players[targetLocation.side];
+            if(playerSideRef[targetLocation.place]) {
+                playerSideRef[targetLocation.place].push(moveCardId);
+            }
+        }
+
+        this.renderFn();
+    }
+
 
 
     findCardOnField(findId: string) {
@@ -967,7 +1018,7 @@ class GameService {
                 if (cardId === findId) {
                     locationInfo.side = playerId;
                     locationInfo.place = 'hand';
-                    locationInfo.cardId = cardId;
+                    // locationInfo.cardId = cardId;
                     locationInfo.placeIndex = idx;
                 }
             })

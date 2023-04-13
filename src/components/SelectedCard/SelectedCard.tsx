@@ -80,9 +80,15 @@ export default function SelectedCard() {
             />
 
             <br />
-            {availableActions.map((action: string, idx: number) => (
-                <div key={idx}>
-                    {action}
+            {availableActions.map((action: string | [string, () => void], idx: number) => (
+                <div
+                    onClick={() => {
+                        if (typeof action !== 'string') { 
+                            action[1]()
+                        }
+                    }}
+                    key={idx}>
+                    {typeof action === 'string' ? action : action[0]}
                 </div>
             ))}
         </div>
