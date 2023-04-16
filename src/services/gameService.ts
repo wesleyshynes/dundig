@@ -60,6 +60,10 @@ class GameService {
     activeModal: string = '';
     modalOptions: any = {};
 
+    resourceRequest: any = {}
+    selectedResources: any = {}
+
+
     showGameInfo() {
         console.log('========================================')
         console.log('cardRef', this.cardRef);
@@ -870,7 +874,26 @@ class GameService {
 
             if (cardInfo.type === 'sentient') {
                 if (this.hasResourcesToPlay(cardInfo.owner, cardId)) {
-                    availableActions.push('Play Sentient Card')
+                    const newResourceRequest: any = {
+                        cardId,
+                        cost: {
+                            ...cardInfo.cost,
+                        },
+                        targetLocation: {
+                            side: [cardInfo.owner],
+                            type: ['ground'],
+                            places: ['dungeon', 'garrison', 'entrance']
+                        },
+                        play: () => {
+                            // pay card cost
+                            // move card to target location
+                        }
+                    }
+
+
+                    availableActions.push('Play Sentient Card', () => {
+                        this.resourceRequest = newResourceRequest;
+                    })
                 }
             }
 
