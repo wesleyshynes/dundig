@@ -4,7 +4,11 @@ import './selectedCard.scss'
 
 export default function SelectedCard() {
 
-    const { activePlayer, selectedCard, selectedTarget } = gameService;
+    const {
+        activePlayer,
+        selectedCard,
+        selectedTarget
+    } = gameService;
     const { id, location } = selectedCard
 
     if (!id) {
@@ -83,7 +87,7 @@ export default function SelectedCard() {
             {availableActions.map((action: string | [string, () => void], idx: number) => (
                 <div
                     onClick={() => {
-                        if (typeof action !== 'string') { 
+                        if (typeof action !== 'string') {
                             action[1]()
                         }
                     }}

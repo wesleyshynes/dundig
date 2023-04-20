@@ -880,9 +880,15 @@ class GameService {
                             ...cardInfo.cost,
                         },
                         targetLocation: {
-                            side: [cardInfo.owner],
-                            type: ['ground'],
-                            places: ['dungeon', 'garrison', 'entrance']
+                            quantity: 1,
+                            options: [
+                                `${cardInfo.owner}entrance`,
+                                `${cardInfo.owner}dungeon`,
+                                `${cardInfo.owner}garrison`,
+                                ...(this.players[cardInfo.owner].dungeon.map((dungeonCardId: string, index: number) => {
+                                    return dungeonCardId
+                                })),
+                            ]
                         },
                         play: () => {
                             // pay card cost
@@ -890,10 +896,12 @@ class GameService {
                         }
                     }
 
-
-                    availableActions.push('Play Sentient Card', () => {
+                    availableActions.push(['Play Sentient Card', () => {
+                        console.log('play sentient card', newResourceRequest)
                         this.resourceRequest = newResourceRequest;
-                    })
+                        this.selectedResources = {};
+                        this.setActiveModal('resourceRequest')
+                    }])
                 }
             }
 

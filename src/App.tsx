@@ -14,6 +14,7 @@ import SelectedCard from './components/SelectedCard/SelectedCard';
 import SelectedTarget from './components/SelectedTarget/SelectedTarget';
 import OccupantList from './components/Occupant/OccupantList';
 import DiscardList from './components/Discard/DiscardList';
+import SelectResources from './components/SelectResources/SelectResources';
 
 function App() {
 
@@ -82,6 +83,12 @@ function App() {
         active={activeModal ? true : false}
         onClose={() => gameService.setActiveModal('')}
       >
+        {activeModal === 'resourceRequest' && (
+          <div className="select-resources">
+            <SelectResources />
+          </div>
+        )}
+        
         {activeModal === 'hand' && (
           <div className="player-hand">
             <Hand playerId={activePlayer} />
