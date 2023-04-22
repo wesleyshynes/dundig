@@ -4,9 +4,14 @@ export default function SelectResources() {
 
     const {
         resourceRequest,
+        selectedResources,
         activePlayer,
         players
     } = gameService;
+
+    const {
+        selected
+    } = selectedResources;
 
     const {
         cardId,
@@ -28,6 +33,14 @@ export default function SelectResources() {
         owner,
     } = cardInfo;
 
+    const handleSelection = (cId: string, locationRef: string[]) => {
+        if(selected && selected[cId]) {
+            gameService.deselectResource(cId, locationRef);
+            return;
+        }
+        gameService.selectResource(cId, locationRef);
+    }
+
     return (
         <div className="select-resources">
             <h2>Select resources for {cardId}</h2>
@@ -35,8 +48,13 @@ export default function SelectResources() {
                 <>
                     <h3>Hand</h3>
                     {players[activePlayer].hand.filter((cId: string) => cardId !== cId).map((cId: string) => (
-                        <div className="resource-card" key={cId}>
-                            {cId}
+                        <div 
+                        onClick={() => handleSelection(cId, ['cost','hand'])}
+                        className="resource-card" 
+                        key={cId}>
+                            {cId} {selected && selected[cId] && (
+                                <>Selected</>
+                            )}
                         </div>
                     ))}
                 </>

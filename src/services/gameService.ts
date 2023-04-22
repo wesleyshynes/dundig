@@ -987,6 +987,41 @@ class GameService {
         return true;
     }
 
+    selectResource(resourceId: string, resourceLocation: string[]) {
+        if(!this.selectedResources.selected) {
+            this.selectedResources.selected = {}
+        }
+        let locationRef: any = this.selectedResources
+        resourceLocation.forEach((location: string, index: number) => {
+            if(!locationRef[location]) {
+                locationRef[location] = {}
+            }
+            locationRef = locationRef[location]
+        })
+        Object.keys(locationRef).forEach((key: string) => {
+            delete this.selectedResources.selected[key]
+            delete locationRef[key]
+        })
+        locationRef[resourceId] = true
+        this.selectedResources.selected[resourceId] = true
+        this.renderFn()
+    }
+
+    deselectResource(resourceId: string, resourceLocation: string[]) {
+        if(!this.selectedResources.selected) {
+            this.selectedResources.selected = {}
+        }
+        let locationRef: any = this.selectedResources
+        resourceLocation.forEach((location: string, index: number) => {
+            if(!locationRef[location]) {
+                locationRef[location] = {}
+            }
+        })
+        delete locationRef[resourceId]
+        delete this.selectedResources.selected[resourceId]
+        this.renderFn()
+    }
+
     moveCard(moveCardId: string, targetLocation: CardLocation) {
         const currentLocation = this.findCardOnField(moveCardId);
         // remove card from location
