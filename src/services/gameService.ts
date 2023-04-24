@@ -987,7 +987,14 @@ class GameService {
         return true;
     }
 
-    selectResource(resourceId: string, resourceLocation: string[]) {
+    selectResource(resourceId: string, resourceLocation: string[], options: any = {
+        quantity: 1,
+    }) {
+
+        const {
+            quantity
+        } = options
+
         if(!this.selectedResources.selected) {
             this.selectedResources.selected = {}
         }
@@ -998,12 +1005,18 @@ class GameService {
             }
             locationRef = locationRef[location]
         })
-        Object.keys(locationRef).forEach((key: string) => {
-            delete this.selectedResources.selected[key]
-            delete locationRef[key]
-        })
+
+        if(quantity && Object.keys(locationRef).length >= quantity) {
+            Object.keys(locationRef).slice(0, (Object.keys(locationRef).length - (quantity - 1))).forEach((key: string) => {
+                delete this.selectedResources.selected[key]
+                delete locationRef[key]
+            })
+        }
+
         locationRef[resourceId] = true
         this.selectedResources.selected[resourceId] = true
+
+        console.log('selectedResources', this.selectedResources)
         this.renderFn()
     }
 
@@ -1016,6 +1029,7 @@ class GameService {
             if(!locationRef[location]) {
                 locationRef[location] = {}
             }
+            locationRef = locationRef[location]
         })
         delete locationRef[resourceId]
         delete this.selectedResources.selected[resourceId]
